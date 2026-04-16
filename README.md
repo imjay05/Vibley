@@ -358,7 +358,7 @@ Full Stack Developer
 
 - GitHub: [@imjay05](https://github.com/imjay05)  
 - LinkedIn: [www.linkedin.com/in/jay-shelke](https://www.linkedin.com/in/jay-shelke-4323a22a5/)  
-- Email: https://www.linkedin.com/in/jay-shelke-4323a22a5/
+- Email: imjaydigambarshelke@gmail.com
 
 ---
 
