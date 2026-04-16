@@ -277,7 +277,7 @@ npm install
 ### 4. Run in development
 ```bash
 # Terminal 1 — Backend
-cd backend && npm run dev
+cd backend && npx nodemon
 
 # Terminal 2 — Frontend
 cd frontend && npm run dev
