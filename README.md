@@ -1,15 +1,15 @@
-# Vibley 💬
+# Vibley 
 > **Stay connected, always.** — A real-time full-stack chat application with friend requests, group messaging, emoji reactions.
 
 ---
 
-## 🚨 Problem Statement
+## Problem Statement
 
 Most chat apps are either too heavyweight (Slack, Teams) for casual personal use, or too limited (basic WebSocket demos) for real-world use. Vibley fills that gap — a lightweight yet feature-rich real-time messenger with a WhatsApp-inspired UX, friend system, group chats, and rich media support.
 
 ---
 
-## ✨ Features
+## Features
 
 - 🔐 **JWT Auth** — Secure signup/login with HTTP-only cookies
 - 💬 **Real-time messaging** — Instant delivery via Socket.IO
