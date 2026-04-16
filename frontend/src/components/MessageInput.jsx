@@ -103,8 +103,7 @@ const MessageInput = () => {
             className="w-full input input-bordered rounded-lg input-sm sm:input-md"
             placeholder="Type a message..."
             value={text}
-            onChange={handleTyping}
-          />
+            onChange={handleTyping}/>
           
           <input type="file" accept="image/*" className="hidden" ref={imageInputRef} onChange={handleImageChange} />
 

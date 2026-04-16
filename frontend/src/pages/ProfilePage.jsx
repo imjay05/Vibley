@@ -37,8 +37,7 @@ const ProfilePage = () => {
               <img
                 src={selectedImg || authUser.profilePic || "/avatar.png"}
                 alt="Profile"
-                className="size-32 rounded-full object-cover border-4 "
-              />
+                className="size-32 rounded-full object-cover border-4 "/>
               <label
                 htmlFor="avatar-upload"
                 className={`
@@ -47,8 +46,7 @@ const ProfilePage = () => {
                   p-2 rounded-full cursor-pointer 
                   transition-all duration-200
                   ${isUpdatingProfile ? "animate-pulse pointer-events-none" : ""}
-                `}
-              >
+                `}>
                 <Camera className="w-5 h-5 text-base-200" />
                 <input
                   type="file"
@@ -56,8 +54,7 @@ const ProfilePage = () => {
                   className="hidden"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  disabled={isUpdatingProfile}
-                />
+                  disabled={isUpdatingProfile}/>
               </label>
             </div>
             <p className="text-sm text-zinc-400">
@@ -108,4 +105,5 @@ const ProfilePage = () => {
     </div>
   );
 };
+
 export default ProfilePage;

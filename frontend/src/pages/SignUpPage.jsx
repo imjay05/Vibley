@@ -12,11 +12,7 @@ const SignUpPage = () => {
   const { signup, isSigningUp } = useAuthStore();
   const { theme } = useThemeStore();
 
-  const darkThemes = [
-    "dark", "night", "dracula", "black", "luxury", "halloween",
-    "forest", "aqua", "synthwave", "business", "coffee", "dim",
-    "sunset", "cyberpunk"
-  ];
+  const darkThemes = ["dark"];
   const isDark = darkThemes.includes(theme);
   const logoSrc = isDark ? "/logo_dark.png" : "/logo_light.png";
 
@@ -51,13 +47,11 @@ const SignUpPage = () => {
                 onError={(e) => {
                   e.target.style.display = "none";
                   e.target.nextSibling.style.display = "flex";
-                }}
-              />
+                }}/>
               {/* Fallback */}
               <div
                 className="w-12 h-12 rounded-2xl bg-blue-100 items-center justify-center"
-                style={{ display: "none" }}
-              >
+                style={{ display: "none" }}>
                 <span className="text-blue-600 font-bold text-2xl">V</span>
               </div>
 
@@ -83,8 +77,7 @@ const SignUpPage = () => {
                   className="input input-bordered w-full pl-10 h-11 text-sm focus:border-blue-500 focus:outline-none transition-colors"
                   placeholder="John Doe"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}/>
               </div>
             </div>
 
@@ -102,8 +95,7 @@ const SignUpPage = () => {
                   className="input input-bordered w-full pl-10 h-11 text-sm focus:border-blue-500 focus:outline-none transition-colors"
                   placeholder="you@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}/>
               </div>
             </div>
 
@@ -121,13 +113,11 @@ const SignUpPage = () => {
                   className="input input-bordered w-full pl-10 h-11 text-sm focus:border-blue-500 focus:outline-none transition-colors"
                   placeholder="Min. 6 characters"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}/>
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-base-content/35 hover:text-base-content/60 transition-colors"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                  onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
@@ -137,8 +127,7 @@ const SignUpPage = () => {
               type="submit"
               className="btn w-full h-11 text-white font-semibold border-none text-sm mt-1"
               style={{ background: "linear-gradient(135deg, #1a56db 0%, #1e40af 100%)" }}
-              disabled={isSigningUp}
-            >
+              disabled={isSigningUp}>
               {isSigningUp ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />

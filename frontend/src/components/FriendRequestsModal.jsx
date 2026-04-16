@@ -20,8 +20,7 @@ const FriendRequestsModal = () => {
           {friendRequests.map((req) => (
             <div
               key={req._id}
-              className="flex items-center justify-between bg-base-200 p-3 rounded-lg"
-            >
+              className="flex items-center justify-between bg-base-200 p-3 rounded-lg">
               <div className="flex items-center gap-3">
                 <img
                   src={req.from.profilePic || "/avatar.png"}
@@ -36,14 +35,12 @@ const FriendRequestsModal = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleRequest(req.from._id, "accept")}
-                  className="btn btn-sm btn-success"
-                >
+                  className="btn btn-sm btn-success">
                   <Check size={16} /> Accept
                 </button>
                 <button
                   onClick={() => handleRequest(req.from._id, "reject")}
-                  className="btn btn-sm btn-error btn-outline"
-                >
+                  className="btn btn-sm btn-error btn-outline">
                   <X size={16} />
                 </button>
               </div>

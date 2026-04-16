@@ -21,7 +21,7 @@ const Sidebar = () => {
   useEffect(() => {
     getFriends();
     getFriendRequests();
-    getUnreadCounts(); // ✅ load unread counts on mount
+    getUnreadCounts(); 
   }, []);
 
   const filteredFriends = showOnlineOnly
@@ -40,11 +40,10 @@ const Sidebar = () => {
           </div>
 
           <div className="flex gap-3">
-            {/* ✅ Bell opens friend REQUESTS modal */}
+            {/* Bell opens friend REQUESTS modal */}
             <button
               className="relative p-1 hover:bg-base-200 rounded-full transition-colors"
-              onClick={() => document.getElementById("friend_requests_modal").showModal()}
-            >
+              onClick={() => document.getElementById("friend_requests_modal").showModal()}>
               <Bell className="size-5" />
               {friendRequests.length > 0 && (
                 <span className="absolute -top-1 -right-1 size-4 bg-error text-white text-[10px] rounded-full flex items-center justify-center">
@@ -53,11 +52,10 @@ const Sidebar = () => {
               )}
             </button>
 
-            {/* ✅ Plus opens ADD CONTACT modal */}
+            {/* Plus opens ADD CONTACT modal */}
             <button
               className="p-1 hover:bg-base-200 rounded-full transition-colors"
-              onClick={() => document.getElementById("add_contact_modal").showModal()}
-            >
+              onClick={() => document.getElementById("add_contact_modal").showModal()}>
               <UserPlus className="size-5" />
             </button>
           </div>
@@ -78,8 +76,7 @@ const Sidebar = () => {
               <img
                 src={user.profilePic || "/avatar.png"}
                 alt={user.fullName}
-                className="size-12 object-cover rounded-full"
-              />
+                className="size-12 object-cover rounded-full"/>
               {onlineUsers.includes(user._id) && (
                 <span className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full ring-2 ring-base-100" />
               )}
@@ -88,7 +85,7 @@ const Sidebar = () => {
             <div className="hidden lg:block text-left min-w-0 flex-1">
               <div className="flex items-center justify-between">
                 <div className="font-medium truncate">{user.fullName}</div>
-                {/* ✅ Unread badge */}
+                {/*Unread badge */}
                 {unreadCounts[user._id] > 0 && (
                   <span className="ml-2 min-w-[20px] h-5 bg-primary text-primary-content text-[11px] font-bold rounded-full flex items-center justify-center px-1">
                     {unreadCounts[user._id]}

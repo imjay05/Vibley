@@ -7,12 +7,7 @@ const Navbar = () => {
   const { logout, authUser } = useAuthStore();
   const { theme } = useThemeStore();
 
-  // Determine logo based on theme darkness
-  const darkThemes = [
-    "dark", "night", "dracula", "black", "luxury", "halloween",
-    "forest", "aqua", "synthwave", "business", "coffee", "dim",
-    "sunset", "cyberpunk"
-  ];
+  const darkThemes = ["dark"];
   const isDark = darkThemes.includes(theme);
   const logoSrc = isDark ? "/logo_dark.png" : "/logo_light.png";
 
@@ -32,13 +27,11 @@ const Navbar = () => {
                 onError={(e) => {
                   e.target.style.display = "none";
                   e.target.nextSibling.style.display = "flex";
-                }}
-              />
+                }}/>
               {/* Fallback icon (hidden by default) */}
               <div
                 className="size-9 rounded-lg bg-primary/10 items-center justify-center"
-                style={{ display: "none" }}
-              >
+                style={{ display: "none" }}>
                 <span className="text-primary font-bold text-lg">V</span>
               </div>
               <h1 className="text-lg font-bold">Vibley</h1>
@@ -48,8 +41,7 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             <Link
               to={"/settings"}
-              className="btn btn-sm gap-2 transition-colors"
-            >
+              className="btn btn-sm gap-2 transition-colors">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">Settings</span>
             </Link>

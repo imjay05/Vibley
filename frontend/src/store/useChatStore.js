@@ -10,7 +10,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-  unreadCounts: {},      // { userId: count }
+  unreadCounts: {},      
   friendRequests: [],
   searchResults: [],
   replyTo: null,
@@ -68,7 +68,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // ✅ Fetch unread counts from backend
+  // Fetch unread counts from backend
   getUnreadCounts: async () => {
     try {
       const res = await axiosInstance.get("/messages/unread");
@@ -121,7 +121,7 @@ export const useChatStore = create((set, get) => ({
     socket.on("newMessage", (newMessage) => {
       const isMessageFromSelectedUser = newMessage.senderId === selectedUser._id;
       if (!isMessageFromSelectedUser) {
-        // ✅ Increment unread count locally (no API call needed)
+        // Increment unread count locally (no API call needed)
         set((state) => ({
           unreadCounts: {
             ...state.unreadCounts,

@@ -21,7 +21,7 @@ const HomePage = () => {
         </form>
       </dialog>
 
-      {/* ✅ Friend Requests Modal */}
+      {/*Friend Requests Modal */}
       <dialog id="friend_requests_modal" className="modal">
         <div className="modal-box p-0">
           <FriendRequestsModal />

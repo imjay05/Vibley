@@ -23,8 +23,7 @@ const NoChatSelected = () => {
               src={logoSrc}
               alt="Vibley"
               className="h-12 w-auto object-contain"
-              onError={() => setImgError(true)}
-            />
+              onError={() => setImgError(true)}/>
           ) : (
             <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
               <span className="text-primary font-bold text-xl">V</span>

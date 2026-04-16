@@ -26,8 +26,7 @@ const SettingsPage = () => {
                 group flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors
                 ${theme === t ? "bg-base-200" : "hover:bg-base-200/50"}
               `}
-              onClick={() => setTheme(t)}
-            >
+              onClick={() => setTheme(t)}>
               <div className="relative h-8 w-full rounded-md overflow-hidden" data-theme={t}>
                 <div className="absolute inset-0 grid grid-cols-4 gap-px p-1">
                   <div className="rounded bg-primary"></div>
@@ -69,21 +68,18 @@ const SettingsPage = () => {
                   {PREVIEW_MESSAGES.map((message) => (
                     <div
                       key={message.id}
-                      className={`flex ${message.isSent ? "justify-end" : "justify-start"}`}
-                    >
+                      className={`flex ${message.isSent ? "justify-end" : "justify-start"}`}>
                       <div
                         className={`
                           max-w-[80%] rounded-xl p-3 shadow-sm
                           ${message.isSent ? "bg-primary text-primary-content" : "bg-base-200"}
-                        `}
-                      >
+                        `}>
                         <p className="text-sm">{message.content}</p>
                         <p
                           className={`
                             text-[10px] mt-1.5
                             ${message.isSent ? "text-primary-content/70" : "text-base-content/70"}
-                          `}
-                        >
+                          `}>
                           12:00 PM
                         </p>
                       </div>
@@ -99,8 +95,7 @@ const SettingsPage = () => {
                       className="input input-bordered flex-1 text-sm h-10"
                       placeholder="Type a message..."
                       value="This is a preview"
-                      readOnly
-                    />
+                      readOnly/>
                     <button className="btn btn-primary h-10 min-h-0">
                       <Send size={18} />
                     </button>
@@ -114,4 +109,6 @@ const SettingsPage = () => {
     </div>
   );
 };
+
+
 export default SettingsPage;

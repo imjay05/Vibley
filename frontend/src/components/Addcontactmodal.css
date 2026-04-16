@@ -1,0 +1,126 @@
+.container {
+  padding: 1.5rem;
+  background-color: var(--color-base-100);
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.searchRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+
+.requestList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+.requestItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-base-200);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.requestUser {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.requestAvatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  object-fit: cover;
+}
+
+.requestName {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.requestActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.resultList {
+  max-height: 15rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.resultItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.resultItem:hover {
+  background-color: var(--color-base-200);
+}
+
+.resultUser {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.resultAvatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  object-fit: cover;
+}
+
+.resultName {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.emptyState {
+  font-size: 0.875rem;
+  color: var(--color-base-content);
+  opacity: 0.5;
+  text-align: center;
+  padding: 1rem 0;
+}

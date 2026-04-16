@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Search, UserPlus, Check, X } from "lucide-react";
+import styles from "./AddContactModal.css";
 
 const AddContactModal = () => {
   const [query, setQuery] = useState("");
@@ -21,9 +22,9 @@ const AddContactModal = () => {
   };
 
   return (
-    <div className="p-6 bg-base-100 rounded-lg w-full">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Add Contacts</h2>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Add Contacts</h2>
         {/* Close button for the dialog */}
         <form method="dialog">
           <button className="btn btn-sm btn-circle btn-ghost">✕</button>
@@ -31,11 +32,11 @@ const AddContactModal = () => {
       </div>
 
       {/* Search Input */}
-      <div className="flex gap-2 mb-6">
+      <div className={styles.searchRow}>
         <input
           type="text"
           placeholder="Search by name..."
-          className="input input-bordered w-full"
+          className={`input input-bordered ${styles.searchInput}`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -47,25 +48,22 @@ const AddContactModal = () => {
 
       {/* Pending Requests Section */}
       {friendRequests.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold opacity-70 mb-2">
+        <div className={styles.section}>
+          <h3 className={styles.sectionLabel}>
             Pending Requests ({friendRequests.length})
           </h3>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
+          <div className={styles.requestList}>
             {friendRequests.map((req) => (
-              <div
-                key={req._id}
-                className="flex items-center justify-between bg-base-200 p-3 rounded-lg"
-              >
-                <div className="flex items-center gap-2">
+              <div key={req._id} className={styles.requestItem}>
+                <div className={styles.requestUser}>
                   <img
                     src={req.from.profilePic || "/avatar.png"}
-                    className="size-8 rounded-full object-cover"
+                    className={styles.requestAvatar}
                     alt={req.from.fullName}
                   />
-                  <span className="text-sm font-medium">{req.from.fullName}</span>
+                  <span className={styles.requestName}>{req.from.fullName}</span>
                 </div>
-                <div className="flex gap-1">
+                <div className={styles.requestActions}>
                   <button
                     onClick={() => handleRequest(req.from._id, "accept")}
                     className="btn btn-xs btn-success"
@@ -87,28 +85,28 @@ const AddContactModal = () => {
 
       {/* Search Results */}
       <div>
-        <h3 className="text-sm font-semibold opacity-70 mb-2">Search Results</h3>
+        <h3 className={styles.sectionLabel}>Search Results</h3>
         {searchResults.length === 0 ? (
-          <p className="text-sm text-base-content/50 text-center py-4">
+          <p className={styles.emptyState}>
             Search for people to add as contacts
           </p>
         ) : (
-          <div className="max-h-60 overflow-y-auto space-y-1">
+          <div className={styles.resultList}>
             {searchResults.map((user) => (
-              <div
-                key={user._id}
-                className="flex items-center justify-between p-2 hover:bg-base-200 rounded-lg">
-                <div className="flex items-center gap-3">
+              <div key={user._id} className={styles.resultItem}>
+                <div className={styles.resultUser}>
                   <img
                     src={user.profilePic || "/avatar.png"}
-                    className="size-10 rounded-full object-cover"
-                    alt={user.fullName}/>
-                  <span className="font-medium text-sm">{user.fullName}</span>
+                    className={styles.resultAvatar}
+                    alt={user.fullName}
+                  />
+                  <span className={styles.resultName}>{user.fullName}</span>
                 </div>
                 <button
                   onClick={() => sendFriendRequest(user._id)}
                   className="btn btn-ghost btn-sm text-primary tooltip"
-                  data-tip="Send friend request">
+                  data-tip="Send friend request"
+                >
                   <UserPlus size={18} />
                 </button>
               </div>
