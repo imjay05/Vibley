@@ -353,7 +353,7 @@ vibley/
 
 ## 👤 Author
 
-** Jay Shelke **  
+Jay Shelke  
 Full Stack Developer  
 
 - GitHub: [@imjay05](https://github.com/imjay05)  
