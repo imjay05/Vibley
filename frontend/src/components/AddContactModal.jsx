@@ -1,80 +1,58 @@
 import { useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Search, UserPlus, Check, X } from "lucide-react";
-import styles from "./AddContactModal.css";
 
 const AddContactModal = () => {
   const [query, setQuery] = useState("");
-  const {
-    searchUsers,
-    searchResults,
-    sendFriendRequest,
-    friendRequests,
-    handleRequest,
-  } = useChatStore();
+  const { searchUsers, searchResults, sendFriendRequest, friendRequests, handleRequest } = useChatStore();
 
-  const handleSearch = () => {
-    if (query.trim()) searchUsers(query.trim());
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSearch();
-  };
+  const handleSearch = () => { if (query.trim()) searchUsers(query.trim()); };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Add Contacts</h2>
-        {/* Close button for the dialog */}
+    <div className="p-5 bg-white rounded-2xl w-full animate-fade-up">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold text-gray-900">Add Contacts</h2>
         <form method="dialog">
-          <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+          <button className="size-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+            <X className="size-4" />
+          </button>
         </form>
       </div>
 
-      {/* Search Input */}
-      <div className={styles.searchRow}>
-        <input
-          type="text"
-          placeholder="Search by name..."
-          className={`input input-bordered ${styles.searchInput}`}
+      {/* Search */}
+      <div className="flex gap-2 mb-5">
+        <input type="text" placeholder="Search by name…"
+          className="flex-1 bg-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:bg-gray-50 transition-colors placeholder:text-gray-400"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <button className="btn btn-primary" onClick={handleSearch}>
-          <Search size={20} />
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()} />
+        <button onClick={handleSearch}
+          className="size-10 bg-blue-600 hover:bg-blue-700 rounded-xl flex items-center justify-center transition-colors">
+          <Search className="size-4 text-white" />
         </button>
       </div>
 
-      {/* Pending Requests Section */}
+      {/* Pending requests */}
       {friendRequests.length > 0 && (
-        <div className={styles.section}>
-          <h3 className={styles.sectionLabel}>
-            Pending Requests ({friendRequests.length})
-          </h3>
-          <div className={styles.requestList}>
+        <div className="mb-5">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Pending ({friendRequests.length})
+          </p>
+          <div className="space-y-1.5 max-h-36 overflow-y-auto">
             {friendRequests.map((req) => (
-              <div key={req._id} className={styles.requestItem}>
-                <div className={styles.requestUser}>
-                  <img
-                    src={req.from.profilePic || "/avatar.png"}
-                    className={styles.requestAvatar}
-                    alt={req.from.fullName}
-                  />
-                  <span className={styles.requestName}>{req.from.fullName}</span>
+              <div key={req._id} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-xl">
+                <div className="flex items-center gap-2.5">
+                  <img src={req.from.profilePic || "/avatar.png"} className="size-8 rounded-full object-cover" alt="" />
+                  <span className="text-sm font-medium">{req.from.fullName}</span>
                 </div>
-                <div className={styles.requestActions}>
-                  <button
-                    onClick={() => handleRequest(req.from._id, "accept")}
-                    className="btn btn-xs btn-success"
-                  >
-                    <Check size={14} />
+                <div className="flex gap-1">
+                  <button onClick={() => handleRequest(req.from._id, "accept")}
+                    className="size-7 bg-green-500 hover:bg-green-600 rounded-lg flex items-center justify-center transition-colors">
+                    <Check className="size-3.5 text-white" />
                   </button>
-                  <button
-                    onClick={() => handleRequest(req.from._id, "reject")}
-                    className="btn btn-xs btn-error"
-                  >
-                    <X size={14} />
+                  <button onClick={() => handleRequest(req.from._id, "reject")}
+                    className="size-7 bg-gray-200 hover:bg-red-100 rounded-lg flex items-center justify-center transition-colors">
+                    <X className="size-3.5 text-gray-500" />
                   </button>
                 </div>
               </div>
@@ -83,36 +61,29 @@ const AddContactModal = () => {
         </div>
       )}
 
-      {/* Search Results */}
+      {/* Results */}
       <div>
-        <h3 className={styles.sectionLabel}>Search Results</h3>
-        {searchResults.length === 0 ? (
-          <p className={styles.emptyState}>
-            Search for people to add as contacts
-          </p>
-        ) : (
-          <div className={styles.resultList}>
-            {searchResults.map((user) => (
-              <div key={user._id} className={styles.resultItem}>
-                <div className={styles.resultUser}>
-                  <img
-                    src={user.profilePic || "/avatar.png"}
-                    className={styles.resultAvatar}
-                    alt={user.fullName}
-                  />
-                  <span className={styles.resultName}>{user.fullName}</span>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Results</p>
+        {searchResults.length === 0
+          ? <p className="text-sm text-gray-400 text-center py-6">Search for people to add</p>
+          : (
+            <div className="max-h-52 overflow-y-auto space-y-1">
+              {searchResults.map((user) => (
+                <div key={user._id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-xl transition-colors">
+                  <div className="flex items-center gap-3">
+                    <img src={user.profilePic || "/avatar.png"} className="size-9 rounded-full object-cover" alt="" />
+                    <span className="text-sm font-medium text-gray-800">{user.fullName}</span>
+                  </div>
+                  <button onClick={() => sendFriendRequest(user._id)}
+                    className="size-8 bg-blue-50 hover:bg-blue-100 rounded-xl flex items-center justify-center transition-colors"
+                    title="Send friend request">
+                    <UserPlus className="size-4 text-blue-600" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => sendFriendRequest(user._id)}
-                  className="btn btn-ghost btn-sm text-primary tooltip"
-                  data-tip="Send friend request"
-                >
-                  <UserPlus size={18} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )
+        }
       </div>
     </div>
   );

@@ -10,10 +10,7 @@ const messageSchema = new mongoose.Schema(
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },
-    groupId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Group",
+      required: true,
     },
     text: {
       type: String,
@@ -32,19 +29,7 @@ const messageSchema = new mongoose.Schema(
       default: null,
     },
 
-    reactions: [
-      {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        emoji: String,
-      },
-    ],
-    
-    seen: {
-      type: Boolean,
-      default: false,
-    },
-
-     deletedFor: [
+    deletedFor: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

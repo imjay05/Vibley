@@ -6,99 +6,74 @@ const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile, logout } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
-
     reader.readAsDataURL(file);
-
     reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
+      setSelectedImg(reader.result);
+      await updateProfile({ profilePic: reader.result });
     };
   };
 
   return (
-    <div className="h-screen pt-20">
-      <div className="max-w-2xl mx-auto p-4 py-8">
-        <div className="bg-base-300 rounded-xl p-6 space-y-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold ">Profile</h1>
-            <p className="mt-2">Your profile information</p>
-          </div>
+    <div className="min-h-screen pt-20 pb-10 bg-gray-50 animate-fade-up">
+      <div className="max-w-lg mx-auto px-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Header */}
+          <div className="h-24 bg-gradient-to-r from-blue-500 to-indigo-600" />
 
-          {/* avatar upload section */}
-
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative">
-              <img
-                src={selectedImg || authUser.profilePic || "/avatar.png"}
-                alt="Profile"
-                className="size-32 rounded-full object-cover border-4 "/>
-              <label
-                htmlFor="avatar-upload"
-                className={`
-                  absolute bottom-0 right-0 
-                  bg-base-content hover:scale-105
-                  p-2 rounded-full cursor-pointer 
-                  transition-all duration-200
-                  ${isUpdatingProfile ? "animate-pulse pointer-events-none" : ""}
-                `}>
-                <Camera className="w-5 h-5 text-base-200" />
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={isUpdatingProfile}/>
-              </label>
-            </div>
-            <p className="text-sm text-zinc-400">
-              {isUpdatingProfile ? "Uploading..." : "Click the camera icon to update your photo"}
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <div className="space-y-1.5">
-              <div className="text-sm text-zinc-400 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Full Name
+          <div className="px-6 pb-6">
+            {/* Avatar */}
+            <div className="flex items-end gap-4 -mt-12 mb-6">
+              <div className="relative">
+                <img
+                  src={selectedImg || authUser.profilePic || "/avatar.png"}
+                  alt="Profile"
+                  className="size-24 rounded-2xl object-cover border-4 border-white shadow-md"
+                />
+                <label htmlFor="avatar-upload"
+                  className={`absolute -bottom-1 -right-1 bg-blue-600 hover:bg-blue-700 p-1.5 rounded-lg cursor-pointer transition-colors shadow ${isUpdatingProfile ? "animate-pulse pointer-events-none" : ""}`}>
+                  <Camera className="size-3.5 text-white" />
+                  <input type="file" id="avatar-upload" className="hidden" accept="image/*"
+                    onChange={handleImageUpload} disabled={isUpdatingProfile} />
+                </label>
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullName}</p>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="text-sm text-zinc-400 flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Email Address
-              </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.email}</p>
-            </div>
-          </div>
-
-          <div className="mt-6 bg-base-300 rounded-xl p-6">
-            <h2 className="text-lg font-medium  mb-4">Account Information</h2>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between py-2 border-b border-zinc-700">
-                <span>Member Since</span>
-                <span>{authUser.createdAt ? new Date(authUser.createdAt).toLocaleDateString() : "N/A"}</span>
-              </div>
-              <div className="flex items-center justify-between py-2">
-                <span>Account Status</span>
-                <span className="text-green-500">Active</span>
+              <div>
+                <h2 className="text-lg font-semibold">{authUser.fullName}</h2>
+                <p className="text-sm text-gray-500">{authUser.email}</p>
               </div>
             </div>
-            <div className="pt-2">
-              <button onClick={logout}
-              className="btn btn-error btn-outline w-full gap-2">
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
+
+            {/* Info rows */}
+            <div className="space-y-3 mb-6">
+              {[
+                { icon: User, label: "Full name", value: authUser.fullName },
+                { icon: Mail, label: "Email",     value: authUser.email },
+              ].map(({ icon: Icon, label, value }) => (
+                <div key={label} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div className="size-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon className="size-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400">{label}</p>
+                    <p className="text-sm font-medium">{value}</p>
+                  </div>
+                </div>
+              ))}
             </div>
+
+            {/* Account info */}
+            <div className="border-t border-gray-100 pt-4 mb-4 flex items-center justify-between text-sm text-gray-500">
+              <span>Member since {authUser.createdAt ? new Date(authUser.createdAt).toLocaleDateString() : "—"}</span>
+              <span className="text-green-500 font-medium">● Active</span>
+            </div>
+
+            <button onClick={logout}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-200 text-red-500 text-sm font-medium hover:bg-red-50 transition-colors">
+              <LogOut className="size-4" /> Sign out
+            </button>
           </div>
         </div>
       </div>

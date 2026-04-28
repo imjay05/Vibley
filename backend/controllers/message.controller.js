@@ -1,20 +1,6 @@
-import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
-
 import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
-
-export const getUsersForSidebar = async (req, res) => {
-  try {
-    const loggedInUserId = req.user._id;
-    const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
-
-    res.status(200).json(filteredUsers);
-  } catch (error) {
-    console.error("Error in getUsersForSidebar: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
 
 
 export const getMessages = async (req, res) => {
@@ -22,47 +8,32 @@ export const getMessages = async (req, res) => {
     const { id: userToChatId } = req.params;
     const myId = req.user._id;
 
+    // Mark incoming messages as seen
     await Message.updateMany(
-      {
-        senderId: userToChatId,
-        receiverId: myId,
-        seen: false,
-      },
-      {
-        $set: { seen: true },
-      }
+      { senderId: userToChatId, receiverId: myId, status: { $ne: "seen" } },
+      { $set: { status: "seen" } }
     );
 
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+    // Notify the sender that their messages have been seen
     const senderSocketId = getReceiverSocketId(userToChatId);
-    
     if (senderSocketId) {
-        io.to(senderSocketId).emit("messagesSeen", {
-            by: myId,
-        });
+      io.to(senderSocketId).emit("messagesSeen", { by: myId });
     }
 
     const messages = await Message.find({
-        $and: [
-            {
-                $or: [
-                    { 
-                        senderId: myId, 
-                        receiverId: userToChatId 
-                    }, { 
-                        senderId: userToChatId, 
-                        receiverId: myId 
-                    },
-                ],
-            },
-            {
-                createdAt: { $gte: sevenDaysAgo },
-            }, {
-                deletedFor: { $ne: myId }, 
-            },
-        ],
+      $and: [
+        {
+          $or: [
+            { senderId: myId, receiverId: userToChatId },
+            { senderId: userToChatId, receiverId: myId },
+          ],
+        },
+        { createdAt: { $gte: sevenDaysAgo } },
+        { deletedFor: { $ne: myId } },
+      ],
     }).populate("replyTo", "text image senderId");
 
     res.status(200).json(messages);
@@ -72,63 +43,52 @@ export const getMessages = async (req, res) => {
   }
 };
 
+
+
 export const sendMessage = async (req, res) => {
   try {
-    const { text, image, groupId, replyTo: replyToId } = req.body;
+    const { text, image, replyTo: replyToId } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
-    console.log("=== SEND MESSAGE DEBUG ===");
-    console.log("senderId:", senderId);
-    console.log("receiverId:", receiverId);
-    console.log("text:", text);
-    console.log("image:", image ? "YES (base64)" : "NO");
-    console.log("groupId:", groupId);
-    console.log("==========================");
 
     let imageUrl;
-
     if (image) {
-      console.log("Uploading image to cloudinary...");
       const upload = await cloudinary.uploader.upload(image);
       imageUrl = upload.secure_url;
-      console.log("Image uploaded:", imageUrl);
     }
-
 
     if (!text && !image) {
       return res.status(400).json({ error: "Message cannot be empty" });
     }
 
+    // If receiver is online, mark as delivered immediately; otherwise sent
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    const initialStatus = receiverSocketId ? "delivered" : "sent";
+
     const newMessage = new Message({
       senderId,
-      receiverId: groupId ? null : receiverId,
-      groupId: groupId || null,
+      receiverId,
       text,
       image: imageUrl,
-      seen: false,
+      status: initialStatus,
       replyTo: replyToId || null,
     });
 
     await newMessage.save();
     await newMessage.populate("replyTo", "text image senderId");
-    console.log("Message saved successfully:", newMessage._id);
 
-    if (!groupId) {
-      const receiverSocketId = getReceiverSocketId(receiverId);
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("newMessage", newMessage);
-      }
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
     res.status(201).json(newMessage);
   } catch (error) {
-    console.log("=== SEND MESSAGE ERROR ===");
-    console.log("Error message:", error.message);
-    console.log("Full error:", error);
-    console.log("==========================");
+    console.log("Error in sendMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
 
 export const deleteMessage = async (req, res) => {
   try {
@@ -137,7 +97,8 @@ export const deleteMessage = async (req, res) => {
     const userId = req.user._id;
 
     const message = await Message.findById(id);
-    if (!message) return res.status(404).json({ message: "Message not found" });
+    if (!message)
+      return res.status(404).json({ message: "Message not found" });
 
     if (deleteFor === "everyone") {
       if (message.senderId.toString() !== userId.toString()) {
@@ -160,50 +121,11 @@ export const deleteMessage = async (req, res) => {
 export const getUnreadCounts = async (req, res) => {
   try {
     const userId = req.user._id;
-
     const counts = await Message.aggregate([
-      {
-        $match: {
-          receiverId: userId,
-          seen: false,
-        },
-      },
-      {
-        $group: {
-          _id: "$senderId",
-          count: { $sum: 1 },
-        },
-      },
+      { $match: { receiverId: userId, status: { $ne: "seen" } } },
+      { $group: { _id: "$senderId", count: { $sum: 1 } } },
     ]);
-    
     res.json(counts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const deleteChatForMe = async (req, res) => {
-  try {
-    const { id: otherUserId } = req.params;
-    const userId = req.user._id;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    await Message.updateMany(
-      {
-        $or: [
-          { senderId: userId, receiverId: otherUserId },
-          { senderId: otherUserId, receiverId: userId },
-        ],
-        createdAt: { $gte: today }, // only today's messages
-      },
-      {
-        $addToSet: { deletedFor: userId },
-      }
-    );
-
-    res.json({ message: "Chat deleted for you (today only)" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

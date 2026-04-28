@@ -1,39 +1,23 @@
 import { Users } from "lucide-react";
 
-const SidebarSkeleton = () => {
-  const skeletonContacts = Array(8).fill(null);
-
-  return (
-    <aside
-      className="h-full w-20 lg:w-72 border-r border-base-300 
-    flex flex-col transition-all duration-200">
-      {/* Header */}
-      <div className="border-b border-base-300 w-full p-5">
-        <div className="flex items-center gap-2">
-          <Users className="w-6 h-6" />
-          <span className="font-medium hidden lg:block">Contacts</span>
-        </div>
-      </div>
-
-      {/* Skeleton Contacts */}
-      <div className="overflow-y-auto w-full py-3">
-        {skeletonContacts.map((_, idx) => (
-          <div key={idx} className="w-full p-3 flex items-center gap-3">
-            {/* Avatar skeleton */}
-            <div className="relative mx-auto lg:mx-0">
-              <div className="skeleton size-12 rounded-full" />
-            </div>
-
-            {/* User info skeleton - only visible on larger screens */}
-            <div className="hidden lg:block text-left min-w-0 flex-1">
-              <div className="skeleton h-4 w-32 mb-2" />
-              <div className="skeleton h-3 w-16" />
-            </div>
+const SidebarSkeleton = () => (
+  <aside className="h-full w-20 lg:w-72 border-r border-gray-100 flex flex-col bg-white">
+    <div className="border-b border-gray-100 p-4 flex items-center gap-2">
+      <Users className="size-5 text-gray-400" />
+      <span className="font-semibold text-sm hidden lg:block text-gray-400">Contacts</span>
+    </div>
+    <div className="overflow-y-auto flex-1 py-2">
+      {Array(7).fill(null).map((_, i) => (
+        <div key={i} className="flex items-center gap-3 p-3">
+          <div className="skeleton size-10 rounded-full flex-shrink-0 mx-auto lg:mx-0" />
+          <div className="hidden lg:flex flex-col gap-1.5 flex-1">
+            <div className="skeleton h-3.5 w-28 rounded" />
+            <div className="skeleton h-2.5 w-16 rounded" />
           </div>
-        ))}
-      </div>
-    </aside>
-  );
-};
+        </div>
+      ))}
+    </div>
+  </aside>
+);
 
 export default SidebarSkeleton;

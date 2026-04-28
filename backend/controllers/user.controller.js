@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 
+
 export const searchUsers = async (req, res) => {
   try {
     const { query } = req.query;
@@ -9,14 +10,16 @@ export const searchUsers = async (req, res) => {
     const users = await User.find({
       $and: [
         { fullName: { $regex: query, $options: "i" } },
-        { _id: { $ne: req.user._id } }
-      ]
+        { _id: { $ne: req.user._id } },
+      ],
     }).select("-password");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 export const sendFriendRequest = async (req, res) => {
   try {
@@ -26,7 +29,7 @@ export const sendFriendRequest = async (req, res) => {
     const targetUser = await User.findById(toId);
     if (!targetUser) return res.status(404).json({ message: "User not found" });
 
-    if (targetUser.friends.some(id => id.toString() === fromId.toString())) {
+    if (targetUser.friends.some((id) => id.toString() === fromId.toString())) {
       return res.status(400).json({ message: "Already friends" });
     }
 
@@ -46,6 +49,8 @@ export const sendFriendRequest = async (req, res) => {
   }
 };
 
+
+
 export const acceptFriendRequest = async (req, res) => {
   try {
     const myId = req.user._id;
@@ -57,8 +62,6 @@ export const acceptFriendRequest = async (req, res) => {
     if (!me || !sender) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    if (!sender) return res.status(404).json({ message: "User not found" });
 
     me.friendRequests = me.friendRequests.filter(
       (r) => r.from.toString() !== senderId.toString()
@@ -75,17 +78,18 @@ export const acceptFriendRequest = async (req, res) => {
   }
 };
 
+
+
 export const rejectFriendRequest = async (req, res) => {
   try {
     const myId = req.user._id;
     const senderId = req.params.id;
 
     const me = await User.findById(myId);
-
     if (!me) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     me.friendRequests = me.friendRequests.filter(
       (r) => r.from.toString() !== senderId.toString()
     );
@@ -97,20 +101,28 @@ export const rejectFriendRequest = async (req, res) => {
   }
 };
 
+
+
 export const getFriends = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
-      .populate("friends", "-password");
+    const user = await User.findById(req.user._id).populate(
+      "friends",
+      "-password"
+    );
     res.status(200).json(user.friends);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
+
+
 export const getFriendRequests = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
-      .populate("friendRequests.from", "-password");
+    const user = await User.findById(req.user._id).populate(
+      "friendRequests.from",
+      "-password"
+    );
     res.status(200).json(user.friendRequests);
   } catch (error) {
     res.status(500).json({ message: "Server error" });

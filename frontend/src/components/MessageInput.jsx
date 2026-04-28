@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
-import { Image, Send, X, Reply, Paperclip } from "lucide-react";
+import { Image, Send, X, Reply } from "lucide-react";
 import toast from "react-hot-toast";
 
 const MessageInput = () => {
@@ -9,112 +9,80 @@ const MessageInput = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const imageInputRef = useRef(null);
   const { sendMessage, selectedUser, replyTo, setReplyTo } = useChatStore();
-  const { socket, authUser } = useAuthStore();
-
-  const handleTyping = (e) => {
-    setText(e.target.value);
-    if (!socket || !selectedUser) return;
-
-    socket.emit("typing", {
-      to: selectedUser._id,
-      from: authUser._id,
-    });
-
-    clearTimeout(window.typingTimeout);
-    window.typingTimeout = setTimeout(() => {
-      socket.emit("stopTyping", { to: selectedUser._id });
-    }, 2000);
-  };
+  const { authUser } = useAuthStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file?.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
+    if (!file?.type.startsWith("image/")) return toast.error("Select an image file");
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
   };
 
-
-  const clearAttachments = () => {
+  const clearImage = () => {
     setImagePreview(null);
     if (imageInputRef.current) imageInputRef.current.value = "";
   };
 
-  const handleSendMessage = async (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
-
     try {
-      await sendMessage({
-        text: text.trim(),
-        image: imagePreview,
-        replyTo: replyTo?._id,
-      });
-
-      // Clear everything
+      await sendMessage({ text: text.trim(), image: imagePreview, replyTo: replyTo?._id });
       setText("");
-      clearAttachments();
+      clearImage();
       setReplyTo(null);
-      socket?.emit("stopTyping", { to: selectedUser._id });
-    } catch (error) {
-      toast.error("Failed to send message");
+    } catch {
+      toast.error("Failed to send");
     }
   };
 
   return (
-    <div className="p-4 w-full">
-      {/* ↳ Reply Preview */}
+    <div className="bg-white border-t border-gray-100 px-4 py-3">
+      {/* Reply preview */}
       {replyTo && (
-        <div className="mb-2 flex items-center justify-between bg-base-300 p-2 rounded-lg border-l-4 border-primary">
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-xs font-bold text-primary flex items-center gap-1">
-              <Reply size={12} /> Replying to {replyTo.senderId === authUser._id ? "yourself" : "friend"}
+        <div className="mb-2 flex items-center justify-between bg-blue-50 border-l-2 border-blue-500 px-3 py-2 rounded-lg">
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            <Reply className="size-3 text-blue-500 flex-shrink-0" />
+            <span className="text-xs font-semibold text-blue-600">
+              {replyTo.senderId === authUser._id ? "Yourself" : selectedUser.fullName}
             </span>
-            <p className="text-sm opacity-70 truncate">{replyTo.text || "Attachment"}</p>
+            <span className="text-xs text-gray-500 truncate">{replyTo.text || "Attachment"}</span>
           </div>
-          <button onClick={() => setReplyTo(null)} className="btn btn-ghost btn-circle btn-xs">
-            <X size={14} />
+          <button onClick={() => setReplyTo(null)} className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0">
+            <X className="size-3.5" />
           </button>
         </div>
       )}
 
-      {/* Attachment Previews */}
-      {(imagePreview) && (
-        <div className="mb-3 flex items-center gap-2">
-          <div className="relative">
-            <img src={imagePreview}
-            className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
-            alt="Preview"/>
-            <button onClick={clearAttachments}
-            className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 flex items-center justify-center">
-              <X size={12} />
-              </button>
-          </div>
+      {/* Image preview */}
+      {imagePreview && (
+        <div className="mb-2 relative inline-block">
+          <img src={imagePreview} className="h-16 w-16 object-cover rounded-xl border border-gray-200" alt="Preview" />
+          <button onClick={clearImage}
+            className="absolute -top-1.5 -right-1.5 size-5 bg-gray-700 text-white rounded-full flex items-center justify-center hover:bg-gray-900 transition-colors">
+            <X className="size-3" />
+          </button>
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-        <div className="flex-1 flex gap-2">
-          <input
-            type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
-            placeholder="Type a message..."
-            value={text}
-            onChange={handleTyping}/>
-          
-          <input type="file" accept="image/*" className="hidden" ref={imageInputRef} onChange={handleImageChange} />
-
-          <div className="flex gap-1">
-            <button type="button" className="btn btn-ghost btn-circle btn-sm" onClick={() => imageInputRef.current?.click()}>
-              <Image size={20} className="text-zinc-400" />
-            </button>
-          </div>
-        </div>
-        <button type="submit" className="btn btn-primary btn-sm btn-circle" disabled={!text.trim() && !imagePreview}>
-          <Send size={20} />
+      <form onSubmit={handleSend} className="flex items-center gap-2">
+        <input type="file" accept="image/*" className="hidden" ref={imageInputRef} onChange={handleImageChange} />
+        <button type="button" onClick={() => imageInputRef.current?.click()}
+          className="p-2 hover:bg-gray-100 rounded-xl transition-colors flex-shrink-0">
+          <Image className="size-5 text-gray-400" />
+        </button>
+        <input
+          type="text"
+          className="flex-1 bg-gray-100 rounded-xl px-4 py-2.5 text-sm outline-none focus:bg-gray-50 transition-colors placeholder:text-gray-400"
+          placeholder="Type a message…"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <button type="submit"
+          disabled={!text.trim() && !imagePreview}
+          className="size-10 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-colors flex-shrink-0">
+          <Send className="size-4 text-white" />
         </button>
       </form>
     </div>

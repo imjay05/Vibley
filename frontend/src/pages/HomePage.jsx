@@ -1,19 +1,23 @@
+import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import AddContactModal from "../components/AddContactModal";
-import FriendRequestsModal from "../components/FriendRequestsModal"; // ✅ new
+import FriendRequestsModal from "../components/FriendRequestsModal";
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 
 const HomePage = () => {
-  const { selectedUser } = useChatStore();
+  const { selectedUser, setSelectedUser } = useChatStore();
+
+  // Always show NoChatSelected on every visit / login
+  useEffect(() => {
+    setSelectedUser(null);
+  }, []);
 
   return (
-    <div className="h-screen bg-base-200">
-
-      {/* Add Contact Modal */}
+    <div className="h-screen bg-red-50 pt-14">
       <dialog id="add_contact_modal" className="modal">
-        <div className="modal-box p-0">
+        <div className="modal-box p-0 max-w-sm rounded-2xl overflow-hidden">
           <AddContactModal />
         </div>
         <form method="dialog" className="modal-backdrop">
@@ -21,9 +25,8 @@ const HomePage = () => {
         </form>
       </dialog>
 
-      {/*Friend Requests Modal */}
       <dialog id="friend_requests_modal" className="modal">
-        <div className="modal-box p-0">
+        <div className="modal-box p-0 max-w-sm rounded-2xl overflow-hidden">
           <FriendRequestsModal />
         </div>
         <form method="dialog" className="modal-backdrop">
@@ -31,15 +34,14 @@ const HomePage = () => {
         </form>
       </dialog>
 
-      <div className="flex items-center justify-center pt-20 px-4">
-        <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
-          <div className="flex h-full rounded-lg overflow-hidden">
-            <Sidebar />
-            {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
-          </div>
+      <div className="h-full flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-lg w-full max-w-8xl h-[calc(100vh-6rem)] flex overflow-hidden">
+          <Sidebar />
+          {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
         </div>
       </div>
     </div>
   );
 };
+
 export default HomePage;
