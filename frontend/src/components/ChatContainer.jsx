@@ -5,13 +5,11 @@ import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import { formatMessageTime } from "../lib/utils";
-import { Check, CheckCheck, Reply, Trash2, Smile } from "lucide-react";
+import { Check, CheckCheck, Reply, Trash2 } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import DeleteModal from "./DeleteModal";
 import "./ChatContainer.css";
-
-const EMOJIS = ["❤️", "😂", "😮", "😢", "👍", "🔥"];
 
 const ChatContainer = () => {
   const {
@@ -27,11 +25,8 @@ const ChatContainer = () => {
 
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-  const [showEmojiFor, setShowEmojiFor] = useState(null);
-
-  const [deleteModal, setDeleteModal] = useState(null); // { messageId, isMine }
+  const [deleteModal, setDeleteModal] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
   const longPressTimer = useRef(null);
 
   useEffect(() => {
@@ -49,7 +44,6 @@ const ChatContainer = () => {
   const openDeleteModal = (message) => {
     const isMine = message.senderId === authUser._id;
     setDeleteModal({ messageId: message._id, isMine });
-    setShowEmojiFor(null);
   };
 
   const handleDelete = async (scope) => {
@@ -71,16 +65,6 @@ const ChatContainer = () => {
     }
   };
 
-  const handleReact = async (messageId, emoji) => {
-    try {
-      await axiosInstance.post(`/messages/${messageId}/react`, { emoji });
-      getMessages(selectedUser._id);
-    } catch (error) {
-      toast.error("Could not react");
-    }
-    setShowEmojiFor(null);
-  };
-
   const handleTouchStart = (message) => {
     longPressTimer.current = setTimeout(() => openDeleteModal(message), 500);
   };
@@ -100,20 +84,23 @@ const ChatContainer = () => {
 
   return (
     <>
-      <div className="chat-container" onClick={() => setShowEmojiFor(null)}>
+      <div className="chat-container">
         <ChatHeader />
 
         <div className="message-list">
           {messages.map((message) => {
             const isMine = message.senderId === authUser._id;
-            const isEmojiOpen = showEmojiFor === message._id;
 
             return (
               <div key={message._id} className={`chat ${isMine ? "chat-end" : "chat-start"}`}>
                 <div className="chat-image avatar">
                   <div className="size-10 rounded-full border">
                     <img
-                      src={isMine ? authUser.profilePic || "/avatar.png" : selectedUser.profilePic || "/avatar.png"}
+                      src={
+                        isMine
+                          ? authUser.profilePic || "/avatar.png"
+                          : selectedUser.profilePic || "/avatar.png"
+                      }
                       alt="profile pic"
                     />
                   </div>
@@ -131,7 +118,10 @@ const ChatContainer = () => {
                     className={`chat-bubble chat-bubble-custom ${
                       isMine ? "bg-primary text-primary-content" : "bg-base-200"
                     }`}
-                    onContextMenu={(e) => { e.preventDefault(); openDeleteModal(message); }}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      openDeleteModal(message);
+                    }}
                     onTouchStart={() => handleTouchStart(message)}
                     onTouchEnd={handleTouchEnd}
                     onTouchMove={handleTouchEnd}
@@ -146,6 +136,7 @@ const ChatContainer = () => {
                         </p>
                       </div>
                     )}
+
                     {message.image && (
                       <img
                         src={message.image}
@@ -155,49 +146,39 @@ const ChatContainer = () => {
                       />
                     )}
                     {message.text && <p>{message.text}</p>}
+
                     {isMine && (
                       <div className="message-status">
-                        {message.status === "sent" && <Check size={14} className="status-icon" />}
-                        {message.status === "delivered" && <CheckCheck size={14} className="status-icon" />}
-                        {message.status === "seen" && <CheckCheck size={14} className="status-icon seen" />}
+                        {message.status === "sent" && (
+                          <Check size={14} className="status-icon" />
+                        )}
+                        {message.status === "delivered" && (
+                          <CheckCheck size={14} className="status-icon" />
+                        )}
+                        {message.status === "seen" && (
+                          <CheckCheck size={14} className="status-icon seen" />
+                        )}
                       </div>
                     )}
                   </div>
 
-                  {/* Hover action buttons */}
-                  <div className={`message-action-buttons ${isEmojiOpen ? "emoji-open" : ""}`}>
+                  {/* Hover actions */}
+                  <div className="message-action-buttons">
                     <button
-                      onClick={(e) => { e.stopPropagation(); setReplyTo(message); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setReplyTo(message);
+                      }}
                       className="btn btn-xs btn-ghost btn-circle bg-base-200 hover:bg-base-300"
                       title="Reply"
                     >
                       <Reply size={13} />
                     </button>
-
-                    <div className="relative">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setShowEmojiFor(isEmojiOpen ? null : message._id); }}
-                        className="btn btn-xs btn-ghost btn-circle bg-base-200 hover:bg-base-300"
-                        title="React"
-                      >
-                        <Smile size={13} />
-                      </button>
-                      {isEmojiOpen && (
-                        <div
-                          className={`emoji-picker ${isMine ? "mine" : "theirs"}`}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {EMOJIS.map((emoji) => (
-                            <button key={emoji} onClick={() => handleReact(message._id, emoji)} className="emoji-btn">
-                              {emoji}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
                     <button
-                      onClick={(e) => { e.stopPropagation(); openDeleteModal(message); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openDeleteModal(message);
+                      }}
                       className="btn btn-xs btn-ghost btn-circle bg-base-200 hover:bg-error hover:text-white"
                       title="Delete"
                     >
@@ -205,14 +186,6 @@ const ChatContainer = () => {
                     </button>
                   </div>
                 </div>
-
-                {message.reactions?.length > 0 && (
-                  <div className={`reactions-row ${isMine ? "mine" : "theirs"}`}>
-                    {message.reactions.map((r, i) => (
-                      <span key={i} className="reaction-badge">{r.emoji}</span>
-                    ))}
-                  </div>
-                )}
               </div>
             );
           })}

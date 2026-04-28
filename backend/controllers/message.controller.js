@@ -208,25 +208,3 @@ export const deleteChatForMe = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-export const reactToMessage = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { emoji } = req.body;
-    const userId = req.user._id;
-
-    const message = await Message.findById(id);
-    if (!message) return res.status(404).json({ message: "Not found" });
-
-    // Remove existing reaction from this user, then add new one
-    message.reactions = message.reactions.filter(
-      (r) => r.userId.toString() !== userId.toString()
-    );
-    message.reactions.push({ userId, emoji });
-    await message.save();
-
-    res.json(message);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};

@@ -22,14 +22,6 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   if (userId) userSocketMap[userId] = socket.id;
 
- socket.on("joinGroup", (groupId) => {
-    socket.join(groupId);
-  });
-
-  socket.on("leaveGroup", (groupId) => {
-    socket.leave(groupId);
-  });
-
   socket.on("disconnect", () => {
     delete userSocketMap[userId];
   });
