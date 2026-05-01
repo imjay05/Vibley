@@ -85,7 +85,7 @@ const AddVibeModal = ({ onClose }) => {
           ) : (
             <Send className="size-4" />
           )}
-          This is my vibe
+          my vibe
         </button>
       </div>
     </div>
