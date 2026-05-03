@@ -34,7 +34,8 @@ const { onlineUsers } = useAuthStore();
             onClick={() => document.getElementById("friend_requests_modal").showModal()}>
             <Bell className="size-4 text-gray-500" />
             {friendRequests.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 size-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 size-4 bg-red-500 text-white 
+                               text-[9px] font-bold rounded-full flex items-center justify-center">
                 {friendRequests.length}
               </span>
             )}
@@ -54,12 +55,17 @@ const { onlineUsers } = useAuthStore();
         )}
         {friends.map((user, i) => (
           <button key={user._id} onClick={() => setSelectedUser(user)}
-            className={`w-full p-3 flex items-center gap-3 hover:bg-gray-50 transition-colors animate-slide-left ${selectedUser?._id === user._id ? "bg-blue-50 border-r-2 border-blue-500" : ""}`}
+            className={`w-full p-3 flex items-center gap-3 hover:bg-gray-50 
+                      transition-colors animate-slide-left ${selectedUser?._id === user._id ? 
+                      "bg-blue-50 border-r-2 border-blue-500" : ""}`}
             style={{ animationDelay: `${i * 30}ms` }}>
-            <div className={`relative mx-auto lg:mx-0 flex-shrink-0 ${hasVibe(user._id) ? "ring-2 ring-purple-500 ring-offset-1 rounded-full" : ""}`}>
-              <img src={user.profilePic || "/avatar.png"} alt={user.fullName}
+            <div className={`relative mx-auto lg:mx-0 flex-shrink-0 ${hasVibe(user._id) ? 
+                 "ring-2 ring-purple-500 ring-offset-1 rounded-full" : ""}`}>
+              <img 
+                 src={user.profilePic || "/avatar.png"} 
+                 alt={user.fullName}
                 className="size-10 object-cover rounded-full" />
-              {onlineUsers.includes(user._id) && (
+                {onlineUsers.includes(user._id) && (
                 <span className="absolute bottom-0 right-0 size-2.5 bg-green-500 rounded-full ring-2 ring-white" />
               )}
             </div>
@@ -67,7 +73,8 @@ const { onlineUsers } = useAuthStore();
               <div className="flex items-center justify-between">
                 <span className="font-medium text-sm text-gray-800 truncate">{user.fullName}</span>
                 {unreadCounts[user._id] > 0 && (
-                  <span className="ml-2 min-w-[18px] h-[18px] bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                  <span className="ml-2 min-w-[18px] h-[18px] bg-blue-600 text-white text-[10px] 
+                        font-bold rounded-full flex items-center justify-center px-1">
                     {unreadCounts[user._id]}
                   </span>
                 )}
@@ -82,5 +89,6 @@ const { onlineUsers } = useAuthStore();
     </aside>
   );
 };
+
 
 export default Sidebar;

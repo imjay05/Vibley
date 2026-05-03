@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
-import Message from "../models/message.model.js";
+import Message from "../models/Message.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +18,7 @@ export function getReceiverSocketId(userId) {
   return userSocketMap[userId];
 }
 
+
 io.on("connection", async (socket) => {
   const userId = socket.handshake.query.userId;
 
@@ -28,7 +29,7 @@ io.on("connection", async (socket) => {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     try {
-      //mark messages as delivered
+      // mark messages as delivered
       const sentMessages = await Message.find({
         receiverId: userId,
         status: "sent",
@@ -63,6 +64,5 @@ io.on("connection", async (socket) => {
     }
   });
 });
-
 
 export { io, app, server };

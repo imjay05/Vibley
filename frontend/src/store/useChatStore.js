@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
-import { axiosInstance } from "../lib/axios";
+import { axiosInstance } from "../lib/Axios";
 import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
@@ -30,6 +30,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  
   sendFriendRequest: async (userId) => {
     try {
       const res = await axiosInstance.post(`/users/request/${userId}`);
@@ -38,6 +39,7 @@ export const useChatStore = create((set, get) => ({
       toast.error(error.response?.data?.message || "Failed to send request");
     }
   },
+
 
   getFriends: async () => {
     set({ isUsersLoading: true });
@@ -51,6 +53,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+
   getFriendRequests: async () => {
     try {
       const res = await axiosInstance.get("/users/requests");
@@ -59,6 +62,7 @@ export const useChatStore = create((set, get) => ({
       console.log("Error fetching requests", error);
     }
   },
+
 
   handleRequest: async (requestId, action) => {
     try {
@@ -70,6 +74,7 @@ export const useChatStore = create((set, get) => ({
       toast.error("Action failed");
     }
   },
+
 
   getUnreadCounts: async () => {
     try {
@@ -83,6 +88,7 @@ export const useChatStore = create((set, get) => ({
       console.log("Error fetching unread counts", error);
     }
   },
+
 
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
@@ -100,6 +106,7 @@ export const useChatStore = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
+
 
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
@@ -132,9 +139,12 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+
   subscribeToMessages: () => {
     const { selectedUser } = get();
+
     if (!selectedUser) return;
+
     const socket = useAuthStore.getState().socket;
 
     const handleNewMessage = (newMessage) => {
@@ -151,6 +161,7 @@ export const useChatStore = create((set, get) => ({
       set({ messages: [...get().messages, newMessage] });
     };
 
+
     const handleMessagesSeen = ({ by }) => {
       if (by.toString() !== selectedUser._id.toString()) return;
       set({
@@ -162,6 +173,7 @@ export const useChatStore = create((set, get) => ({
         ),
       });
     };
+
 
     const handleMessagesDelivered = ({ to }) => {
       if (to.toString() !== selectedUser._id.toString()) return;
@@ -189,13 +201,22 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
+
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     const handlers = get()._socketHandlers;
 
-    if (handlers.newMessage) socket.off("newMessage", handlers.newMessage);
-    if (handlers.messagesSeen) socket.off("messagesSeen", handlers.messagesSeen);
-    if (handlers.messagesDelivered) socket.off("messagesDelivered", handlers.messagesDelivered);
+    if (handlers.newMessage){
+      socket.off("newMessage", handlers.newMessage);
+    }
+
+    if (handlers.messagesSeen){
+      socket.off("messagesSeen", handlers.messagesSeen);
+    }
+
+    if (handlers.messagesDelivered){
+      socket.off("messagesDelivered", handlers.messagesDelivered);
+    }
 
     set({ _socketHandlers: {} });
   },

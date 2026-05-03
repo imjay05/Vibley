@@ -6,12 +6,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 
-import { connectDB } from "./lib/db.js";
-import authRoutes from "./routes/auth.route.js";
-import messageRoutes from "./routes/message.route.js";
-import userRoutes from "./routes/user.route.js";
-import vibeRoutes from "./routes/vibe.route.js";
-import { app, server } from "./lib/socket.js";
+import { connectDB } from "./lib/DB.js";
+import authRoutes from "./routes/AuthRoute.js";
+import messageRoutes from "./routes/MessageRoute.js";
+import userRoutes from "./routes/UserRoute.js";
+import vibeRoutes from "./routes/VibeRoute.js";
+import { app, server } from "./lib/Socket.js";
 
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
@@ -26,12 +26,14 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/vibes", vibeRoutes);
 
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
   });
 }
+
 
 connectDB().then(() => {
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

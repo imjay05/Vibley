@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
+import { axiosInstance } from "../lib/Axios";
 import toast from "react-hot-toast";
 
 export const useVibeStore = create((set, get) => ({
@@ -25,6 +25,7 @@ export const useVibeStore = create((set, get) => ({
     }
   },
 
+
   generateMemes: async () => {
     set({ isGenerating: true, memeOptions: [] });
     try {
@@ -36,6 +37,7 @@ export const useVibeStore = create((set, get) => ({
       set({ isGenerating: false });
     }
   },
+
 
   postVibe: async ({ moodText, templateId, topText, bottomText, caption, imageUrl }) => {
     set({ isPosting: true });
@@ -59,6 +61,7 @@ export const useVibeStore = create((set, get) => ({
     }
   },
 
+
   deleteMyVibe: async () => {
     const { myVibe } = get();
     if (!myVibe) return;
@@ -71,6 +74,7 @@ export const useVibeStore = create((set, get) => ({
     }
   },
 
+  
   replyToVibe: async (vibeId, text) => {
     try {
       const res = await axiosInstance.post(`/vibes/${vibeId}/reply`, { text });
