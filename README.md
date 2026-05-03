@@ -446,5 +446,11 @@ NODE_ENV=production npm start
 | Status: sent→delivered→seen | Transparency without read receipts anxiety (matches WhatsApp UX) |
 | Cloudinary for media        | Offloads storage, provides CDN, avoids GridFS complexity         |
 | Imgflip for memes           | Free, large meme library, no generation cost                     |
-| TTL index on Vibe           | Zero-maintenance expiry — MongoDB handles cleanup automatically   |
+| TTL index on Vibe           | Zero-maintenance expiry — MongoDB handles cleanup automatically  |
 | Zustand over Redux          | Minimal boilerplate, built-in devtools, simpler async patterns   |
+
+## 👤 Author
+
+**Your Name**
+- GitHub: [Jay](https://github.com/imjay05)
+- LinkedIn: [Jay Shelke](https://www.linkedin.com/in/jay-shelke-4323a22a5/)
