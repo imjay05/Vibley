@@ -84,42 +84,42 @@ Modern messaging apps are bloated with features that dilute genuine connection. 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        CLIENT (React + Vite)                    │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────────┐  │
-│  │ Auth     │  │ Chat     │  │ Vibes    │  │ Friends       │  │
-│  │ Store    │  │ Store    │  │ Store    │  │ (in ChatStore)│  │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────┬────────┘  │
-│       │              │              │                │           │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────────┐    │
+│  │ Auth     │  │ Chat     │  │ Vibes    │  │ Friends       │    │
+│  │ Store    │  │ Store    │  │ Store    │  │ (in ChatStore)│    │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────┬────────┘    │
+│       │              │              │                │          │
 │       └──────────────┴──────────────┴────────────────┘          │
-│                          Axios (REST) + Socket.IO Client         │
+│                          Axios (REST) + Socket.IO Client        │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
               ┌────────────────▼────────────────┐
-              │        Express.js Server         │
-              │   ┌──────────────────────────┐   │
-              │   │     REST API Routes       │   │
-              │   │  /api/auth               │   │
-              │   │  /api/messages           │   │
-              │   │  /api/users              │   │
-              │   │  /api/vibes              │   │
-              │   └──────────────────────────┘   │
-              │   ┌──────────────────────────┐   │
-              │   │     Socket.IO Server      │   │
-              │   │  - online presence        │   │
-              │   │  - newMessage event       │   │
-              │   │  - messagesDelivered      │   │
-              │   │  - messagesSeen           │   │
-              │   └──────────────────────────┘   │
-              └──────────────┬──────────────────-┘
+              │        Express.js Server        │
+              │   ┌──────────────────────────┐  │
+              │   │     REST API Routes      │  │
+              │   │  /api/auth               │  │
+              │   │  /api/messages           │  │
+              │   │  /api/users              │  │
+              │   │  /api/vibes              │  │
+              │   └──────────────────────────┘  │
+              │   ┌──────────────────────────┐  │
+              │   │     Socket.IO Server     │  │
+              │   │  - online presence       │  │
+              │   │  - newMessage event      │  │
+              │   │  - messagesDelivered     │  │
+              │   │  - messagesSeen          │  │
+              │   └──────────────────────────┘  │
+              └──────────────┬──────────────────┘
                              │
               ┌──────────────▼─────────────┐
-              │         MongoDB             │
-              │  Users | Messages | Vibes   │
+              │         MongoDB            │
+              │  Users | Messages | Vibes  │
               └──────────────┬─────────────┘
                              │
               ┌──────────────▼─────────────┐
-              │         Cloudinary          │
-              │  Profile pics | Attachments │
-              │  Vibe meme mirrors          │
+              │         Cloudinary         │
+              │  Profile pics | Attachments│
+              │  Vibe meme mirrors         │
               └────────────────────────────┘
 ```
 
