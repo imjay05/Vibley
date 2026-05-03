@@ -451,6 +451,6 @@ NODE_ENV=production npm start
 
 ## 👤 Author
 
-**Your Name**
+**Jay**
 - GitHub: [Jay](https://github.com/imjay05)
 - LinkedIn: [Jay Shelke](https://www.linkedin.com/in/jay-shelke-4323a22a5/)
