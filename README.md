@@ -1,4 +1,4 @@
-# Vibley 💬✨
+# Vibley 💬
 
 > **Real conversations. Real connections. Less noise.**
 
