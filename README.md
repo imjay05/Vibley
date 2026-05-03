@@ -1,126 +1,210 @@
-# Vibley 
-> **Stay connected, always.** — A real-time full-stack chat application with friend requests, group messaging, emoji reactions.
+# Vibley 💬✨
+
+> **Real conversations. Real connections. Less noise.**
+
+Vibley is a full-stack real-time messaging application with a friends system and ephemeral "Vibes" — a meme-based mood-sharing feature that expires after 24 hours.
 
 ---
 
-## Problem Statement
+## 📋 Problem Statement
 
-Most chat apps are either too heavyweight (Slack, Teams) for casual personal use, or too limited (basic WebSocket demos) for real-world use. Vibley fills that gap — a lightweight yet feature-rich real-time messenger with a WhatsApp-inspired UX, friend system, group chats, and rich media support.
+Modern messaging apps are bloated with features that dilute genuine connection. Vibley solves this by providing:
+
+- A **clean, distraction-free** chat experience between friends only (no strangers)
+- A **friend-request system** ensuring you only chat with people you know
+- **Ephemeral Vibes** — share your mood via memes that disappear after 24 hours, inspired by Stories, but lighter and more expressive
+- **Real-time delivery receipts** (sent → delivered → seen) for transparency
+- **Message history limited to 7 days** to keep conversations fresh and storage lean
 
 ---
 
-## Features
+## 🚀 Features
 
-- 🔐 **JWT Auth** — Secure signup/login with HTTP-only cookies
-- 💬 **Real-time messaging** — Instant delivery via Socket.IO
-- 👥 **Friend system** — Send, accept, and reject friend requests
-- 👁️ **Read receipts** — Seen/delivered/sent message status (✓ / ✓✓ / blue ✓✓)
-- 🗑️ **Delete messages** — Delete for everyone (sender only) or delete for me
-- 💬 **Reply to messages** — Threaded reply previews inside bubbles
-- 😄 **Emoji reactions** — React to any message with 6 quick emojis
-- 🔔 **Unread badges** — Per-contact unread message counts in sidebar
-- ⌨️ **Typing indicator** — Live "X is typing..." with animated dots
-- 👤 **Profile management** — Upload/update profile picture via Cloudinary
-- 🖼️ **Image sharing** — Send images in chat with Cloudinary storage
-- 👥 **Group chats** — Create groups, manage members
-- 📱 **Responsive design** — Mobile-first, works on all screen sizes
+### 🔐 Authentication
+- JWT-based auth with HTTP-only cookies (secure, sameSite strict)
+- Signup with unique name + email enforcement
+- Password hashing via bcryptjs
+- Protected routes on both frontend and backend
+
+### 👥 Friends System
+- Search users by name
+- Send / accept / reject friend requests
+- Real-time friend request badge in sidebar
+- Chat only available between mutual friends
+
+### 💬 Real-Time Messaging
+- Powered by **Socket.IO**
+- Instant message delivery to online users
+- **Message statuses**: `sending → sent → delivered → seen`
+- Status auto-upgrades on connection and on chat open
+- Image attachments via Cloudinary
+- Reply-to / quote messages
+- Delete for me or delete for everyone
+- 7-day message history window
+- Unread message counts per contact
+
+### ✨ Vibes (Ephemeral Mood Board)
+- Post a daily meme-based "Vibe" that expires after **24 hours**
+- Powered by the **Imgflip API** — random real memes fetched live
+- Friends can reply to your Vibe
+- Visual ring indicator on sidebar avatar when a friend has an active Vibe
+- MongoDB TTL index auto-deletes expired Vibes
+
+### 🎨 UI / UX
+- Clean minimal design with Tailwind CSS + DaisyUI
+- Animated transitions (fade-up, slide-left)
+- Responsive sidebar (icon-only on mobile, full on desktop)
+- Profile photo upload (Cloudinary)
+- Online/offline presence indicators
+- Rotating taglines on auth pages
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-| Tech | Purpose |
-|------|---------|
-| React 18 | UI framework |
-| Zustand | Global state management |
-| Socket.IO Client | Real-time communication |
-| Tailwind CSS + DaisyUI | Styling & component library |
-| React Router v6 | Client-side routing |
-| Axios | HTTP requests |
-| Lucide React | Icon library |
-| React Hot Toast | Toast notifications |
-
-### Backend
-| Tech | Purpose |
-|------|---------|
-| Node.js + Express | REST API server |
-| Socket.IO | WebSocket server |
-| MongoDB + Mongoose | Database & ODM |
-| JWT + bcryptjs | Authentication & password hashing |
-| Cloudinary | Image/media storage |
-| Cookie-parser | JWT cookie handling |
-| dotenv | Environment variables |
+| Layer       | Technology                       |
+|-------------|----------------------------------|
+| Frontend    | React 19, Vite, Zustand          |
+| Styling     | Tailwind CSS v3, DaisyUI v5      |
+| Routing     | React Router v7                  |
+| HTTP Client | Axios                            |
+| Real-time   | Socket.IO (client + server)      |
+| Backend     | Node.js, Express v5              |
+| Database    | MongoDB, Mongoose                |
+| Auth        | JWT, bcryptjs, HTTP-only cookies |
+| Media       | Cloudinary                       |
+| Memes       | Imgflip public API               |
+| Toasts      | react-hot-toast                  |
+| Icons       | lucide-react                     |
 
 ---
 
-## 🏗️ System Design / Architecture
-
-### High-Level Flow
+## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        CLIENT (React)                       │
-│  Zustand Store ←→ Axios (REST) + Socket.IO (WS)            │
-└──────────────┬────────────────────────┬────────────────────-┘
-               │ HTTP REST              │ WebSocket
-               ▼                        ▼
-┌──────────────────────────────────────────────────────────────┐
-│               EXPRESS SERVER + SOCKET.IO SERVER              │
-│  Routes → Middleware (JWT Auth) → Controllers                │
-│  userSocketMap: { userId → socketId }  (in-memory)          │
-└──────────────┬────────────────────────────────────────────--─┘
-               │ Mongoose ODM
-               ▼
-┌─────────────────────┐       ┌────────────────────────┐
-│      MongoDB        │       │      Cloudinary CDN     │
-│  Users, Messages,   │       │  Profile pics, images  │
-│  Groups             │       │  in messages           │
-└─────────────────────┘       └────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT (React + Vite)                    │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────────┐  │
+│  │ Auth     │  │ Chat     │  │ Vibes    │  │ Friends       │  │
+│  │ Store    │  │ Store    │  │ Store    │  │ (in ChatStore)│  │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────┬────────┘  │
+│       │              │              │                │           │
+│       └──────────────┴──────────────┴────────────────┘          │
+│                          Axios (REST) + Socket.IO Client         │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+              ┌────────────────▼────────────────┐
+              │        Express.js Server         │
+              │   ┌──────────────────────────┐   │
+              │   │     REST API Routes       │   │
+              │   │  /api/auth               │   │
+              │   │  /api/messages           │   │
+              │   │  /api/users              │   │
+              │   │  /api/vibes              │   │
+              │   └──────────────────────────┘   │
+              │   ┌──────────────────────────┐   │
+              │   │     Socket.IO Server      │   │
+              │   │  - online presence        │   │
+              │   │  - newMessage event       │   │
+              │   │  - messagesDelivered      │   │
+              │   │  - messagesSeen           │   │
+              │   └──────────────────────────┘   │
+              └──────────────┬──────────────────-┘
+                             │
+              ┌──────────────▼─────────────┐
+              │         MongoDB             │
+              │  Users | Messages | Vibes   │
+              └──────────────┬─────────────┘
+                             │
+              ┌──────────────▼─────────────┐
+              │         Cloudinary          │
+              │  Profile pics | Attachments │
+              │  Vibe meme mirrors          │
+              └────────────────────────────┘
 ```
 
-### Real-Time Message Flow
+---
+
+## 📁 Folder Structure
 
 ```
-1. User A types → socket.emit("typing", { to: UserB })
-   └─ Server → io.to(UserB_socketId).emit("typing", UserA)
-   └─ UserB sees "UserA is typing..." with animated dots
-
-2. User A sends message → POST /api/messages/send/:receiverId
-   └─ Server saves Message to MongoDB
-   └─ Server calls getReceiverSocketId(receiverId)
-   └─ io.to(receiverSocketId).emit("newMessage", message)
-   └─ UserB's Zustand store appends message → UI re-renders
-
-3. UserB opens chat → GET /api/messages/:senderId
-   └─ Server marks all incoming messages as seen: true
-   └─ Server emits "messagesSeen" to sender's socket
-   └─ Sender's UI updates tick to blue ✓✓
-
-4. Socket disconnect → delete userSocketMap[userId]
-   └─ User removed from online users list
-   └─ All connected clients notified via "getOnlineUsers"
-```
-
-### Architecture Diagram
-
-```
-frontend/
-├── public/  
-├── src/
-│   ├── pages/          ← Route-level components (Home, Login, Signup, Profile, Settings)
-│   ├── components/     ← Reusable UI (ChatContainer, Sidebar, MessageInput, Navbar, Modals)
-│   ├── store/          ← Zustand stores (useAuthStore, useChatStore, useThemeStore)
-│   └── lib/            ← axios instance, utility
-│   ├── constants/
-├──functions
-
-backend/
-├── controllers/        ← Business logic (auth, message, group, user)
-├── models/             ← Mongoose schemas (User, Message, Group)
-├── routes/             ← Express routers (auth, messages, users)
-├── middleware/         ← JWT auth guard (protectRoute)
-└── lib/                ← cloudinary config, socket.io setup, JWT utils 
+vibley/
+├── backend/
+│   ├── controllers/
+│   │   ├── AuthController.js       # signup, login, logout, updateProfile, checkAuth
+│   │   ├── MessageController.js    # getMessages, sendMessage, deleteMessage, getUnreadCounts
+│   │   ├── UserController.js       # searchUsers, friend requests, getFriends
+│   │   └── VibeController.js       # CRUD vibes, meme generation, replies
+│   ├── lib/
+│   │   ├── Cloudinary.js           # Cloudinary v2 config
+│   │   ├── DB.js                   # MongoDB connection
+│   │   ├── Socket.js               # Socket.IO server + userSocketMap
+│   │   └── Utils.js                # generateToken (JWT + cookie)
+│   ├── middleware/
+│   │   └── AuthMiddleware.js       # protectRoute — JWT verification
+│   ├── models/
+│   │   ├── User.js                 # User schema
+│   │   ├── Message.js              # Message schema
+│   │   └── Vibe.js                 # Vibe schema (TTL indexed)
+│   ├── routes/
+│   │   ├── AuthRoute.js
+│   │   ├── MessageRoute.js
+│   │   ├── UserRoute.js
+│   │   └── VibeRoute.js
+│   ├── server.js                   # Entry point
+│   └── package.json
+│
+└── frontend/
+    ├── public/
+    │   ├── avatar.png
+    │   └── logo_light.png
+    ├── src/
+    │   ├── components/
+    │   │   ├── chat/
+    │   │   │   ├── ChatContainer.jsx   # Message list, delete, reply
+    │   │   │   ├── ChatHeader.jsx      # Selected user header + close
+    │   │   │   ├── DeleteModal.jsx     # Delete for me / everyone modal
+    │   │   │   ├── MessageInput.jsx    # Text + image + reply input
+    │   │   │   └── StatusLabel.jsx     # sent/delivered/seen indicator
+    │   │   ├── contact/
+    │   │   │   ├── AddContactModal.jsx       # Search + send friend request
+    │   │   │   └── FriendRequestsModal.jsx   # Accept / reject requests
+    │   │   ├── skeletons/
+    │   │   │   ├── MessageSkeleton.jsx
+    │   │   │   └── SidebarSkeleton.jsx
+    │   │   ├── vibe/
+    │   │   │   ├── AddVibeModal.jsx    # Generate + post vibe
+    │   │   │   ├── MemeSelector.jsx    # Pick from meme options
+    │   │   │   └── VibeCard.jsx        # Display a single vibe
+    │   │   ├── Navbar.jsx
+    │   │   └── Sidebar.jsx
+    │   ├── lib/
+    │   │   ├── Axios.js               # Axios instance
+    │   │   └── Utils.js               # formatMessageTime, formatRelativeTime
+    │   ├── pages/
+    │   │   ├── home/
+    │   │   │   ├── HomePage.jsx
+    │   │   │   └── HomePage.css
+    │   │   ├── login/
+    │   │   │   ├── LoginPage.jsx
+    │   │   │   └── LoginPage.css
+    │   │   ├── profile/
+    │   │   │   ├── Profilepage.jsx
+    │   │   │   └── ProfilePage.css
+    │   │   ├── signup/
+    │   │   │   ├── SignupPage.jsx
+    │   │   │   └── SignupPage.css
+    │   │   └── vibe/
+    │   │       ├── VibePage.jsx
+    │   │       └── VibePage.css
+    │   ├── store/
+    │   │   ├── useAuthStore.js        # Auth state + socket init
+    │   │   ├── useChatStore.js        # Messages, friends, unread counts
+    │   │   └── useVibeStore.js        # Vibes state
+    │   ├── App.jsx
+    │   ├── main.jsx
+    │   └── index.css
+    └── package.json
 ```
 
 ---
@@ -128,238 +212,239 @@ backend/
 ## 🗄️ Database Schemas
 
 ### User
-```
-User {
-  email:          String (unique, required)
-  fullName:       String (required)
-  password:       String (hashed, min 6 chars)
-  profilePic:     String (Cloudinary URL)
-  friends:        [ObjectId → User]
-  friendRequests: [{ from: ObjectId, status: "pending", createdAt: Date }]
-  createdAt:      Date (auto)
-  updatedAt:      Date (auto)
+```js
+{
+  email:          String (required, unique),
+  fullName:       String (required),
+  password:       String (required, minlength: 6),  // bcrypt hashed
+  profilePic:     String (default: ""),
+  friends:        [ObjectId → User],
+  friendRequests: [{ from: ObjectId → User, createdAt: Date }],
+  createdAt:      Date,
+  updatedAt:      Date
 }
 ```
 
 ### Message
-```
-Message {
-  senderId:   ObjectId → User (required)
-  receiverId: ObjectId → User (null for group messages)
-  groupId:    ObjectId → Group (null for DMs)
-  text:       String
-  image:      String (Cloudinary URL)
-  status:     Enum ["sent", "delivered", "seen"] (default: "sent")
-  seen:       Boolean (default: false)
-  replyTo:    ObjectId → Message (self-reference, nullable)
-  reactions:  [{ userId: ObjectId, emoji: String }]
-  deletedFor: [ObjectId → User]  ← soft delete per user
-  createdAt:  Date (auto)
+```js
+{
+  senderId:   ObjectId → User (required),
+  receiverId: ObjectId → User (required),
+  text:       String,
+  image:      String,              // Cloudinary URL
+  status:     Enum ["sent", "delivered", "seen"] (default: "sent"),
+  replyTo:    ObjectId → Message,  // quoted message
+  deletedFor: [ObjectId → User],   // soft-delete per user
+  createdAt:  Date,
+  updatedAt:  Date
 }
 ```
 
-### Group
-```
-Group {
-  name:      String (required)
-  members:   [ObjectId → User]
-  admin:     ObjectId → User
-  createdAt: Date (auto)
-  updatedAt: Date (auto)
+### Vibe
+```js
+{
+  userId:    ObjectId → User (required),
+  memeUrl:   String (required),    // Cloudinary URL
+  moodText:  String (required),
+  caption:   String (default: ""),
+  expiresAt: Date (required),      // +24h from creation — TTL indexed
+  replies: [{
+    fromId:    ObjectId → User,
+    text:      String,
+    createdAt: Date
+  }],
+  createdAt: Date,
+  updatedAt: Date
 }
+// TTL index: { expiresAt: 1 }, expireAfterSeconds: 0
 ```
 
 ---
 
-## 📡 API Documentation
+## 🔗 ER Diagram
 
-### Auth Routes — `/api/auth`
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/signup` | No | Register new user |
-| POST | `/login` | No | Login, sets JWT cookie |
-| POST | `/logout` | No | Clears JWT cookie |
-| PUT | `/update-profile` | ✅ | Update profile picture |
-| GET | `/check` | ✅ | Verify current session |
+```
+┌──────────────────────┐         ┌──────────────────────┐
+│         User         │         │       Message         │
+├──────────────────────┤         ├──────────────────────┤
+│ _id (PK)             │◄────────│ senderId (FK)         │
+│ email                │◄────────│ receiverId (FK)       │
+│ fullName             │         │ text                  │
+│ password             │         │ image                 │
+│ profilePic           │         │ status                │
+│ friends[]  ──────────┼─────┐   │ replyTo (FK→Message) │
+│ friendRequests[]     │     │   │ deletedFor[] (FK)     │
+│ createdAt            │     │   │ createdAt             │
+└──────────────────────┘     │   └──────────────────────┘
+         ▲                   │
+         │  (self-ref M:M)   │
+         └───────────────────┘
 
-### Message Routes — `/api/messages`
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/users` | ✅ | Get all users (sidebar) |
-| GET | `/unread` | ✅ | Get unread counts per sender |
-| GET | `/:id` | ✅ | Get messages with a user (last 7 days) |
-| POST | `/send/:id` | ✅ | Send message (text/image/reply) |
-| DELETE | `/:id` | ✅ | Delete message (for me or everyone) |
-| POST | `/:id/react` | ✅ | React to message with emoji |
-| PUT | `/delete-chat/:id` | ✅ | Soft-delete today's chat for current user |
-
-### Group Routes — `/api/messages/group`
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| POST | `/group` | ✅ | Create a new group |
-| GET | `/group` | ✅ | Get all groups for current user |
-| GET | `/group/:id/members` | ✅ | Get group members |
-
-### User / Friend Routes — `/api/users`
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/search?query=` | ✅ | Search users by name |
-| GET | `/friends` | ✅ | Get friend list |
-| GET | `/requests` | ✅ | Get pending friend requests |
-| POST | `/request/:id` | ✅ | Send friend request |
-| POST | `/accept/:id` | ✅ | Accept friend request |
-| POST | `/reject/:id` | ✅ | Reject friend request |
-
----
-
-## ⚡ Performance
-
-- **7-day message window** — `getMessages` only fetches messages from the last 7 days, capping query size
-- **Soft deletes** — `deletedFor` array avoids hard deletes and expensive cascades
-- **Aggregation for unread counts** — Single MongoDB `$aggregate` pipeline groups unseen messages by sender instead of N+1 queries
-- **Socket map (in-memory)** — `userSocketMap` provides O(1) socket lookups for targeted delivery
-- **Cloudinary CDN** — Images served via CDN, not the Node server, keeping bandwidth low
-- **Zustand** — Minimal re-renders; only affected slices re-render on state change
-- **Lazy socket subscription** — `subscribeToMessages` called only when a chat is open; cleaned up on close
-
----
-
-## 🔒 Security Measures
-
-- **HTTP-only JWT cookies** — Tokens are inaccessible to JavaScript, preventing XSS theft
-- **`sameSite: strict`** — Mitigates CSRF attacks
-- **`secure: true` in production** — Cookies only sent over HTTPS
-- **bcryptjs password hashing** — `bcrypt.genSalt(10)` + hash before storage; plaintext never persisted
-- **`protectRoute` middleware** — Every protected endpoint verifies JWT and attaches `req.user`
-- **Password excluded from all queries** — `.select("-password")` on every User query
-- **Sender-only delete-for-everyone** — Backend validates `message.senderId === req.user._id` before allowing global delete
-- **Request deduplication** — Friend request endpoint checks for existing requests before inserting
-
----
-
-## 🚀 Installation Guide
-
-### Prerequisites
-- Node.js v18+
-- MongoDB (local or Atlas)
-- Cloudinary account
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/vibley.git
-cd vibley
+┌──────────────────────┐
+│         Vibe         │
+├──────────────────────┤
+│ _id (PK)             │
+│ userId (FK→User)     │◄──── one user, one active vibe
+│ memeUrl              │
+│ moodText             │
+│ caption              │
+│ expiresAt (TTL)      │
+│ replies[]            │
+│   ├─ fromId (FK→User)│
+│   ├─ text            │
+│   └─ createdAt       │
+│ createdAt            │
+└──────────────────────┘
 ```
 
-### 2. Backend setup
-```bash
-cd backend
-npm install
-```
+---
 
-Create a `.env` file in `/backend`:
+## 🔌 API Reference
+
+### Auth — `/api/auth`
+| Method | Endpoint          | Auth | Description             |
+|--------|-------------------|------|-------------------------|
+| POST   | `/signup`         | ✗    | Register new user       |
+| POST   | `/login`          | ✗    | Login, sets JWT cookie  |
+| POST   | `/logout`         | ✗    | Clears JWT cookie       |
+| PUT    | `/update-profile` | ✓    | Upload profile picture  |
+| GET    | `/check`          | ✓    | Verify session / get me |
+
+### Messages — `/api/messages`
+| Method | Endpoint    | Auth | Description                     |
+|--------|-------------|------|---------------------------------|
+| GET    | `/unread`   | ✓    | Unread counts grouped by sender |
+| POST   | `/send/:id` | ✓    | Send message to user            |
+| GET    | `/:id`      | ✓    | Get conversation (7-day window) |
+| DELETE | `/:id`      | ✓    | Delete message (me / everyone)  |
+
+### Users — `/api/users`
+| Method | Endpoint         | Auth | Description           |
+|--------|------------------|------|-----------------------|
+| GET    | `/search?query=` | ✓    | Search users by name  |
+| GET    | `/friends`       | ✓    | Get my friends list   |
+| GET    | `/requests`      | ✓    | Get incoming requests |
+| POST   | `/request/:id`   | ✓    | Send friend request   |
+| POST   | `/accept/:id`    | ✓    | Accept friend request |
+| POST   | `/reject/:id`    | ✓    | Reject friend request |
+
+### Vibes — `/api/vibes`
+| Method | Endpoint     | Auth | Description                    |
+|--------|--------------|------|--------------------------------|
+| GET    | `/friends`   | ✓    | Get active vibes from friends  |
+| GET    | `/mine`      | ✓    | Get my current active vibe     |
+| POST   | `/generate`  | ✓    | Fetch random meme from Imgflip |
+| POST   | `/`          | ✓    | Post a new vibe                |
+| DELETE | `/:id`       | ✓    | Delete my vibe                 |
+| POST   | `/:id/reply` | ✓    | Reply to a friend's vibe       |
+
+---
+
+## ⚡ Socket.IO Events
+
+### Server → Client
+| Event               | Payload              | Description                           |
+|---------------------|----------------------|---------------------------------------|
+| `getOnlineUsers`    | `string[]` (userIds) | Broadcast online user list            |
+| `newMessage`        | `Message` object     | Deliver new message to receiver       |
+| `messagesDelivered` | `{ to: userId }`     | Notify sender messages were delivered |
+| `messagesSeen`      | `{ by: userId }`     | Notify sender messages were seen      |
+
+### Client → Server
+| Event        | Description                    |
+|--------------|--------------------------------|
+| `disconnect` | Auto — removes from online map |
+
+---
+
+## ⚙️ Environment Variables
+
+### Backend `.env`
 ```env
 PORT=5001
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/vibley
-JWT_SECRET=your_super_secret_key
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
 NODE_ENV=development
 
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+
+IMGFLIP_USERNAME=your_imgflip_username
+IMGFLIP_PASSWORD=your_imgflip_password
 ```
 
-### 3. Frontend setup
+---
+
+## 🏃 Getting Started
+
+### Prerequisites
+- Node.js ≥ 18
+- MongoDB (local or Atlas)
+- Cloudinary account
+- Imgflip account (free)
+
+### Installation
+
 ```bash
+# Clone the repo
+git clone https://github.com/your-username/vibley.git
+cd vibley
+
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
 cd ../frontend
 npm install
 ```
 
-### 4. Run in development
+### Running in Development
+
 ```bash
-# Terminal 1 — Backend
-cd backend && npx nodemon
+# Terminal 1 — backend
+cd backend
+npm run dev        # nodemon server.js on port 5001
 
-# Terminal 2 — Frontend
-cd frontend && npm run dev
+# Terminal 2 — frontend
+cd frontend
+npm run dev        # Vite on port 5173
 ```
 
-Frontend: http://localhost:5173  
-Backend API: http://localhost:5001
+### Building for Production
 
-### 5. Build for production
 ```bash
-cd frontend && npm run build
-cd ../backend && npm start
-```
-In production mode, Express serves the frontend's `dist` folder at the root.
+cd frontend
+npm run build      # outputs to dist/
 
----
-
-## 📁 Project Structure
-
-```
-vibley/
-├── backend/
-│   ├── controllers/
-│   │   ├── auth.controller.js       ← signup, login, logout, updateProfile, checkAuth
-│   │   ├── message.controller.js    ← getMessages, sendMessage, deleteMessage, reactToMessage
-│   │   ├── group.controller.js      ← createGroup, getUserGroups, getGroupMembers
-│   │   └── user.controller.js       ← searchUsers, friend request CRUD, getFriends
-│   ├── lib/
-│   │   ├── cloudinary.js            ← Cloudinary SDK config
-│   │   ├── db.js                    ← MongoDB connection
-│   │   ├── socket.js                ← Socket.IO server + userSocketMap
-│   │   └── utils.js                 ← generateToken (JWT + cookie)
-│   ├── middleware/
-│   │   └── auth.middleware.js       ← protectRoute JWT guard
-│   ├── models/
-│   │   ├── user.model.js            ← User schema (friends, friendRequests)
-│   │   ├── message.model.js         ← Message schema (reactions, replyTo, deletedFor)
-│   │   └── group.model.js           ← Group schema
-│   ├── routes/
-│   │   ├── auth.route.js            ← /api/auth
-│   │   ├── message.route.js         ← /api/messages
-│   │   └── user.route.js            ← /api/users
-│   └── server.js                     ← Express app entry point
-│
-└── frontend/
-    └── src/
-        ├── components/
-        │   ├── ChatContainer.jsx     ← Message list, delete modal, reactions
-        │   ├── ChatHeader.jsx        ← Active chat user info
-        │   ├── MessageInput.jsx      ← Text/image input, reply preview, typing emit
-        │   ├── Sidebar.jsx           ← Friends list, unread badges, online status
-        │   ├── Navbar.jsx            ← Top nav with theme-aware logo
-        │   ├── AddContactModal.jsx   ← Search users + send friend request
-        │   ├── FriendRequestsModal.jsx ← Accept/reject incoming requests
-        │   ├── AuthImagePattern.jsx  ← Decorative auth page side panel
-        │   └── NoChatSelected.jsx    ← Empty state for chat area
-        ├── pages/
-        │   ├── HomePage.jsx          ← Main layout with modals, sidebar, chat
-        │   ├── LoginPage.jsx         ← Login form with theme-aware logo
-        │   ├── SignUpPage.jsx        ← Registration form with validation
-        │   ├── ProfilePage.jsx       ← View/edit profile, avatar upload, logout
-        │   └── SettingsPage.jsx      ← Theme selector with live preview
-        ├── store/
-        │   ├── useAuthStore.js       ← Auth state, socket init, online users
-        │   ├── useChatStore.js       ← Messages, friends, requests, unread counts
-        │   └── useThemeStore.js      ← Selected theme (persisted)
-        └── lib/
-            ├── axios.js              ← Axios instance with base URL + credentials
-            └── utils.js             ← formatMessageTime helper
+cd ../backend
+NODE_ENV=production npm start
+# Express serves the built frontend from ../frontend/dist
 ```
 
 ---
 
-## 👤 Author
+## 🔒 Security Highlights
 
-Jay Shelke  
-Full Stack Developer  
-
-- GitHub: [@imjay05](https://github.com/imjay05)  
-- LinkedIn: [www.linkedin.com/in/jay-shelke](https://www.linkedin.com/in/jay-shelke-4323a22a5/)  
-- Email: imjaydigambarshelke@gmail.com
+- Passwords hashed with **bcrypt** (salt rounds: 10)
+- JWT stored in **HTTP-only, sameSite: strict** cookies — immune to XSS token theft
+- All sensitive routes protected by `protectRoute` middleware
+- Delete-for-everyone only allowed for the **message sender**
+- Unique name enforcement prevents impersonation
+- CORS restricted to `localhost:5173` in development
 
 ---
 
-> Built with Dedication using the MERN stack + Socket.IO
+## 📌 Key Design Decisions
+
+| Decision                    | Rationale                                                        |
+|-----------------------------|------------------------------------------------------------------|
+| Friends-only messaging      | Prevents spam, maintains trust                                   |
+| 7-day message window        | Keeps DB lean, encourages present conversations                  |
+| Vibes expire in 24h         | Ephemeral sharing reduces social pressure                        |
+| Status: sent→delivered→seen | Transparency without read receipts anxiety (matches WhatsApp UX) |
+| Cloudinary for media        | Offloads storage, provides CDN, avoids GridFS complexity         |
+| Imgflip for memes           | Free, large meme library, no generation cost                     |
+| TTL index on Vibe           | Zero-maintenance expiry — MongoDB handles cleanup automatically   |
+| Zustand over Redux          | Minimal boilerplate, built-in devtools, simpler async patterns   |
