@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Trash2, MessageCircle, Send, Clock } from "lucide-react";
 import { useVibeStore } from "../../store/useVibeStore";
 import { useAuthStore } from "../../store/useAuthStore";
-import { formatRelativeTime } from "../../lib/utils";
+import { formatRelativeTime } from "../../lib/Utils";
 
 const VibeCard = ({ vibe, isMine }) => {
   const [showReplies, setShowReplies] = useState(false);
