@@ -1,5 +1,5 @@
 import { Check, CheckCheck, Clock } from "lucide-react";
-import { formatRelativeTime } from "../../lib/Utils";
+import { formatRelativeTime } from "../../lib/utils";
 
 const StatusLabel = ({ message }) => {
   const { status, seenAt, createdAt } = message;
