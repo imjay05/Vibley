@@ -24,9 +24,10 @@ export const useChatStore = create((set, get) => ({
     if (!query) return set({ searchResults: [] });
     try {
       const res = await axiosInstance.get(`/users/search?query=${query}`);
-      set({ searchResults: res.data });
+      set({ searchResults: Array.isArray(res.data) ? res.data : [] });
     } catch {
       toast.error("Search failed");
+      set({ searchResults: [] });
     }
   },
 
@@ -45,9 +46,10 @@ export const useChatStore = create((set, get) => ({
     set({ isUsersLoading: true });
     try {
       const res = await axiosInstance.get("/users/friends");
-      set({ friends: res.data });
+      set({ friends: Array.isArray(res.data) ? res.data : [] });
     } catch {
       toast.error("Could not load friends");
+      set({ friends: [] });
     } finally {
       set({ isUsersLoading: false });
     }
@@ -57,9 +59,10 @@ export const useChatStore = create((set, get) => ({
   getFriendRequests: async () => {
     try {
       const res = await axiosInstance.get("/users/requests");
-      set({ friendRequests: res.data });
+      set({ friendRequests: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
       console.log("Error fetching requests", error);
+      set({ friendRequests: [] });
     }
   },
 
@@ -77,16 +80,18 @@ export const useChatStore = create((set, get) => ({
 
 
   getUnreadCounts: async () => {
-    try {
-      const res = await axiosInstance.get("/messages/unread");
-      const counts = {};
-      res.data.forEach(({ _id, count }) => {
-        counts[_id] = count;
-      });
-      set({ unreadCounts: counts });
-    } catch (error) {
-      console.log("Error fetching unread counts", error);
-    }
+  try {
+    const res = await axiosInstance.get("/messages/unread");
+    // Guard: ensure it's actually an array
+    const data = Array.isArray(res.data) ? res.data : [];
+    const counts = {};
+    data.forEach(({ _id, count }) => {
+      counts[_id] = count;
+    });
+    set({ unreadCounts: counts });
+  } catch (error) {
+    console.log("Error fetching unread counts", error);
+  }
   },
 
 

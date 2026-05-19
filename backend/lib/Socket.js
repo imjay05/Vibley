@@ -22,7 +22,7 @@ export function getReceiverSocketId(userId) {
 io.on("connection", async (socket) => {
   const userId = socket.handshake.query.userId;
 
-  if (userId) {
+  if (userId && userId !== "undefined") {
     userSocketMap[userId] = socket.id;
 
     // emit online users AFTER adding
@@ -58,7 +58,7 @@ io.on("connection", async (socket) => {
   }
 
   socket.on("disconnect", () => {
-    if (userId) {
+    if (userId && userId !== "undefined") {
       delete userSocketMap[userId];
       io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
