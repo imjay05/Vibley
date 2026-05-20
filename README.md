@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="frontend/public/logo_light.png" alt="Vibley Logo" width="80" />
-
 # Vibley 💬
 
 ### Real-Time Messaging with a Friends System & Ephemeral Vibes
