@@ -1,5 +1,4 @@
 <div align="center">
-
 # Vibley 💬
 
 ### Real-Time Messaging with a Friends System & Ephemeral Vibes
