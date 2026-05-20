@@ -75,7 +75,7 @@ export const generateMemeOptions = async (req, res) => {
 // POST /api/vibes — upload meme + save vibe
 export const postVibe = async (req, res) => {
   try {
-    const { moodText, templateId, topText, bottomText, caption, imageUrl } = req.body;
+    const { templateId, topText, bottomText, userCaption, imageUrl } = req.body;
 
     let memeImageUrl = imageUrl;
 
@@ -110,8 +110,7 @@ export const postVibe = async (req, res) => {
     const vibe = await Vibe.create({
       userId: req.user._id,
       memeUrl: upload.secure_url,
-      moodText,
-      caption,
+      userCaption,
       expiresAt,
     });
 

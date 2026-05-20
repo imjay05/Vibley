@@ -11,14 +11,10 @@ const vibeSchema = new mongoose.Schema(
       type: String, 
       required: true 
     },      
-    moodText: { 
-      type: String, 
-      required: true 
-    },      
-    caption: { 
+    userCaption: { 
       type: String, 
       default: "" 
-    },        
+    },    
     expiresAt: { 
       type: Date, 
       required: true 

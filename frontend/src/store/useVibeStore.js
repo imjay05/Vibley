@@ -39,19 +39,18 @@ export const useVibeStore = create((set, get) => ({
   },
 
 
-  postVibe: async ({ moodText, templateId, topText, bottomText, caption, imageUrl }) => {
+  postVibe: async ({ templateId, topText, bottomText, userCaption,  imageUrl }) => {
     set({ isPosting: true });
     try {
       const res = await axiosInstance.post("/vibes", {
-        moodText,
         templateId,
         topText,
         bottomText,
-        caption,
+        userCaption, 
         imageUrl,
       });
       set({ myVibe: res.data, memeOptions: [] });
-      toast.success("Vibe posted! 🔥");
+      toast.success("Vibe posted !");
       return true;
     } catch (err) {
       toast.error(err.response?.data?.error || "Post failed");
@@ -87,4 +86,21 @@ export const useVibeStore = create((set, get) => ({
       toast.error("Reply failed");
     }
   },
+
+  updateVibeCaption: async (vibeId, userCaption) => {
+  try {
+    await axiosInstance.patch(`/vibes/${vibeId}/caption`, { userCaption });
+    set((state) => ({
+      myVibe: state.myVibe?._id === vibeId
+        ? { ...state.myVibe, userCaption }
+        : state.myVibe,
+      friendVibes: state.friendVibes.map((v) =>
+        v._id === vibeId ? { ...v, userCaption } : v
+      ),
+    }));
+  } catch {
+    toast.error("Caption update failed");
+  }
+  },
+  
 }));
