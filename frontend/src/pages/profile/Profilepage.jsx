@@ -20,7 +20,7 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page min-h-screen pt-20 pb-10 animate-fade-up">
-      <div className="max-w-lg mx-auto px-4">
+      <div className="profile-card-wrap">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Header */}
           <div className="profile-card-header" />

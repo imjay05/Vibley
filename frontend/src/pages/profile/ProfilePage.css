@@ -11,6 +11,13 @@
 }
 
 .profile-card-header {
-  background: linear-gradient(135deg, #1a4fa0, #2176d2, #38a8f5);
+  background: linear-gradient(135deg, #1a4fa0, #2176d2, #4b077f);
   height: 160px;
+}
+
+.profile-card-wrap {
+  width: 100%;
+  max-width: 700px;   
+  margin: 0 auto;
+  padding: 0 1rem;
 }
