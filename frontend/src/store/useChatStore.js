@@ -13,8 +13,6 @@ export const useChatStore = create((set, get) => ({
   friendRequests: [],
   searchResults: [],
   replyTo: null,
-
-  // Store named socket handlers so we can remove only ours
   _socketHandlers: {},
 
   setReplyTo: (msg) => set({ replyTo: msg }),
@@ -31,7 +29,6 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  
   sendFriendRequest: async (userId) => {
     try {
       const res = await axiosInstance.post(`/users/request/${userId}`);
@@ -40,7 +37,6 @@ export const useChatStore = create((set, get) => ({
       toast.error(error.response?.data?.message || "Failed to send request");
     }
   },
-
 
   getFriends: async () => {
     set({ isUsersLoading: true });
@@ -55,7 +51,6 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-
   getFriendRequests: async () => {
     try {
       const res = await axiosInstance.get("/users/requests");
@@ -65,7 +60,6 @@ export const useChatStore = create((set, get) => ({
       set({ friendRequests: [] });
     }
   },
-
 
   handleRequest: async (requestId, action) => {
     try {
@@ -78,28 +72,25 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-
   getUnreadCounts: async () => {
-  try {
-    const res = await axiosInstance.get("/messages/unread");
-    // Guard: ensure it's actually an array
-    const data = Array.isArray(res.data) ? res.data : [];
-    const counts = {};
-    data.forEach(({ _id, count }) => {
-      counts[_id] = count;
-    });
-    set({ unreadCounts: counts });
-  } catch (error) {
-    console.log("Error fetching unread counts", error);
-  }
+    try {
+      const res = await axiosInstance.get("/messages/unread");
+      const data = Array.isArray(res.data) ? res.data : [];
+      const counts = {};
+      data.forEach(({ _id, count }) => {
+        counts[_id] = count;
+      });
+      set({ unreadCounts: counts });
+    } catch (error) {
+      console.log("Error fetching unread counts", error);
+    }
   },
-
 
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
-      set({ messages: res.data });
+      set({ messages: Array.isArray(res.data) ? res.data : [] });
       set((state) => {
         const updated = { ...state.unreadCounts };
         delete updated[userId];
@@ -107,11 +98,11 @@ export const useChatStore = create((set, get) => ({
       });
     } catch {
       toast.error("Could not fetch messages");
+      set({ messages: [] });
     } finally {
       set({ isMessagesLoading: false });
     }
   },
-
 
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
@@ -144,10 +135,8 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-
   subscribeToMessages: () => {
     const { selectedUser } = get();
-
     if (!selectedUser) return;
 
     const socket = useAuthStore.getState().socket;
@@ -166,7 +155,6 @@ export const useChatStore = create((set, get) => ({
       set({ messages: [...get().messages, newMessage] });
     };
 
-
     const handleMessagesSeen = ({ by }) => {
       if (by.toString() !== selectedUser._id.toString()) return;
       set({
@@ -178,7 +166,6 @@ export const useChatStore = create((set, get) => ({
         ),
       });
     };
-
 
     const handleMessagesDelivered = ({ to }) => {
       if (to.toString() !== selectedUser._id.toString()) return;
@@ -196,7 +183,6 @@ export const useChatStore = create((set, get) => ({
     socket.on("messagesSeen", handleMessagesSeen);
     socket.on("messagesDelivered", handleMessagesDelivered);
 
-    // Store references so unsubscribe can remove only these handlers
     set({
       _socketHandlers: {
         newMessage: handleNewMessage,
@@ -206,22 +192,13 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     const handlers = get()._socketHandlers;
 
-    if (handlers.newMessage){
-      socket.off("newMessage", handlers.newMessage);
-    }
-
-    if (handlers.messagesSeen){
-      socket.off("messagesSeen", handlers.messagesSeen);
-    }
-
-    if (handlers.messagesDelivered){
-      socket.off("messagesDelivered", handlers.messagesDelivered);
-    }
+    if (handlers.newMessage) socket.off("newMessage", handlers.newMessage);
+    if (handlers.messagesSeen) socket.off("messagesSeen", handlers.messagesSeen);
+    if (handlers.messagesDelivered) socket.off("messagesDelivered", handlers.messagesDelivered);
 
     set({ _socketHandlers: {} });
   },

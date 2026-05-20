@@ -8,8 +8,13 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-  origin: [process.env.FRONTEND_URL || "http://localhost:5173"],
-},
+    origin: [
+      "http://localhost:5173",
+      process.env.FRONTEND_URL,
+    ],
+    credentials: true,
+    methods: ["GET", "POST"],
+  },
 });
 
 const userSocketMap = {};
@@ -18,18 +23,14 @@ export function getReceiverSocketId(userId) {
   return userSocketMap[userId];
 }
 
-
 io.on("connection", async (socket) => {
   const userId = socket.handshake.query.userId;
 
   if (userId && userId !== "undefined") {
     userSocketMap[userId] = socket.id;
-
-    // emit online users AFTER adding
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     try {
-      // mark messages as delivered
       const sentMessages = await Message.find({
         receiverId: userId,
         status: "sent",
