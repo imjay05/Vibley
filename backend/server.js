@@ -13,8 +13,7 @@ import { app, server } from "./lib/Socket.js";
 const PORT = process.env.PORT || 5001;
 
 const allowedOrigins = [
-  "http://localhost:5173", 
-  "https://vibley-web.vercel.app",          
+  "http://localhost:5173",           
   process.env.FRONTEND_URL,                  
 ].filter(Boolean);                          
 
