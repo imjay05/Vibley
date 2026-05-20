@@ -1,5 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
+
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
