@@ -12,17 +12,23 @@ import { app, server } from "./lib/Socket.js";
 
 const PORT = process.env.PORT || 5001;
 
+const allowedOrigins = [
+  "http://localhost:5173",          
+  process.env.FRONTEND_URL,                  
+].filter(Boolean);                          
+
+console.log("Allowed origins:", allowedOrigins);  // helps debug
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
+
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowed = [
-      "http://localhost:5173",
-      process.env.FRONTEND_URL,
-    ];
-    if (!origin || allowed.includes(origin)) callback(null, true);
-    else callback(new Error("Not allowed by CORS"));
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    console.error("CORS blocked origin:", origin);
+    return callback(new Error(`CORS blocked: ${origin}`));
   },
   credentials: true,
 }));
