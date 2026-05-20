@@ -27,7 +27,7 @@ const ProfilePage = () => {
 
           <div className="px-8 pb-8">
             {/* Avatar */}
-            <div className="flex items-end gap-4 -mt-14 mb-8">
+            <div className="flex items-end gap-4 -mt-10 mb-8">
               <div className="relative">
                 <img
                   src={selectedImg || authUser.profilePic || "/avatar.png"}
