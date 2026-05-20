@@ -175,3 +175,21 @@ export const replyToVibe = async (req, res) => {
       .json({ error: err.message });
   }
 };
+
+// PATCH /api/vibes/:id/caption
+export const updateVibeCaption = async (req, res) => {
+  try {
+    const { userCaption } = req.body;
+    const vibe = await Vibe.findById(req.params.id);
+
+    if (!vibe)
+      return res.status(404).json({ error: "Not found" });
+
+    vibe.userCaption = userCaption ?? "";
+    await vibe.save();
+
+    res.json({ userCaption: vibe.userCaption });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

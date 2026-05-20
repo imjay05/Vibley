@@ -7,6 +7,7 @@ import {
   postVibe,
   deleteVibe,
   replyToVibe,
+  updateVibeCaption
 } from "../controllers/VibeController.js";
 
 const router = express.Router();
@@ -17,6 +18,7 @@ router.post("/generate", protectRoute, generateMemeOptions);
 router.post("/", protectRoute, postVibe);
 router.delete("/:id", protectRoute, deleteVibe);
 router.post("/:id/reply", protectRoute, replyToVibe);
+router.patch("/:id/caption", protectRoute, updateVibeCaption);
 
 
 export default router;
