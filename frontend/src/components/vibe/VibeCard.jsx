@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Trash2, MessageCircle, Send, Clock, Pencil, Check, X } from "lucide-react";
+import { Trash2, MessageCircle, Send, Clock, Pencil, Check, X, ChevronDown, ChevronUp } from "lucide-react";
 import { useVibeStore } from "../../store/useVibeStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { formatRelativeTime } from "../../lib/utils";
 
 const VibeCard = ({ vibe, isMine }) => {
   const [showReplies, setShowReplies] = useState(false);
+  const [showReactions, setShowReactions] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [isEditingCaption, setIsEditingCaption] = useState(false);
   const [draftCaption, setDraftCaption] = useState(vibe.userCaption || "");
@@ -68,12 +69,12 @@ const VibeCard = ({ vibe, isMine }) => {
         </div>
       </div>
 
-      {/* Meme image — clean, no overlay */}
+      {/* Meme image */}
       <div>
         <img src={vibe.memeUrl} alt="vibe meme" className="w-full object-contain max-h-64" />
       </div>
 
-      {/* User caption — editable by anyone */}
+      {/* User caption */}
       <div className="px-3 py-2 border-t border-gray-50">
         {isEditingCaption ? (
           <div className="flex items-center gap-1.5">
@@ -169,21 +170,44 @@ const VibeCard = ({ vibe, isMine }) => {
         </div>
       )}
 
-      {/* My vibe — reactions */}
+      {/* My vibe — reactions (collapsible) */}
       {isMine && vibe.replies?.length > 0 && (
-        <div className="px-3 py-2 border-t border-gray-50 space-y-1.5">
-          <p className="text-[10px] text-gray-400 font-medium">REACTIONS</p>
-          {vibe.replies.map((r, i) => (
-            <div key={i} className="flex items-start gap-1.5">
-              <img
-                src={r.fromId?.profilePic || "/avatar.png"}
-                className="size-5 rounded-full object-cover mt-0.5" />
-              <div className="bg-gray-100 rounded-xl px-2.5 py-1.5 flex-1">
-                <p className="text-[10px] font-semibold text-gray-700">{r.fromId?.fullName}</p>
-                <p className="text-xs text-gray-600">{r.text}</p>
-              </div>
+        <div className="border-t border-gray-50">
+          {/* Clickable reactions header */}
+          <button
+            onClick={() => setShowReactions(!showReactions)}
+            className="w-full flex items-center justify-between px-3 py-2
+                       hover:bg-gray-50 transition-colors">
+            <div className="flex items-center gap-1.5">
+              <MessageCircle className="size-3.5 text-purple-400" />
+              <p className="text-[10px] text-gray-500 font-medium">
+                {vibe.replies.length} REACTION{vibe.replies.length > 1 ? "S" : ""}
+              </p>
             </div>
-          ))}
+            {showReactions
+              ? <ChevronUp className="size-3.5 text-gray-400" />
+              : <ChevronDown className="size-3.5 text-gray-400" />}
+          </button>
+
+          {/* Expanded reactions list */}
+          {showReactions && (
+            <div className="px-3 pb-2 space-y-1.5">
+              {vibe.replies.map((r, i) => (
+                <div key={i} className="flex items-start gap-1.5">
+                  <img
+                    src={r.fromId?.profilePic || "/avatar.png"}
+                    className="size-5 rounded-full object-cover mt-0.5" />
+                  <div className="bg-gray-100 rounded-xl px-2.5 py-1.5 flex-1">
+                    {/* Name is now always shown */}
+                    <p className="text-[10px] font-semibold text-purple-600">
+                      {r.fromId?.fullName}
+                    </p>
+                    <p className="text-xs text-gray-600">{r.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
