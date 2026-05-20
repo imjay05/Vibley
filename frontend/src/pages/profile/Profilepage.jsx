@@ -23,16 +23,16 @@ const ProfilePage = () => {
       <div className="max-w-lg mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           {/* Header */}
-          <div className="profile-card-header h-24" />
+          <div className="profile-card-header" />
 
-          <div className="px-6 pb-6">
+          <div className="px-8 pb-8">
             {/* Avatar */}
-            <div className="flex items-end gap-4 -mt-12 mb-6">
+            <div className="flex items-end gap-4 -mt-14 mb-8">
               <div className="relative">
                 <img
                   src={selectedImg || authUser.profilePic || "/avatar.png"}
                   alt="Profile"
-                  className="size-24 rounded-2xl object-cover border-4 border-white shadow-md"/>
+                  className="size-28 rounded-2xl object-cover border-4 border-white shadow-md"/>
                 <label
                   htmlFor="avatar-upload"
                   className={
@@ -63,8 +63,8 @@ const ProfilePage = () => {
                 { icon: User, label: "Full name", value: authUser.fullName },
                 { icon: Mail, label: "Email",     value: authUser.email },
               ].map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                  <div className="size-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div key={label} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                  <div className="size-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Icon className="size-4 text-blue-600" />
                   </div>
                   <div>
@@ -86,7 +86,7 @@ const ProfilePage = () => {
             <button
               onClick={logout}
               className="w-full flex items-center justify-center gap-2 
-              py-2.5 rounded-xl border border-red-200 
+              py-3 rounded-xl border border-red-200 
               text-red-500 text-sm font-medium hover:bg-red-50 transition-colors">
               <LogOut className="size-4" /> Sign out
             </button>
