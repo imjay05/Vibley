@@ -8,16 +8,13 @@ export const getFriendsVibes = async (req, res) => {
     const vibes = await Vibe.find({
       userId: { $in: friendIds },
       expiresAt: { $gt: new Date() },
-    })
-      .populate("userId", "fullName profilePic")
+    }).populate("userId", "fullName profilePic")
       .populate("replies.fromId", "fullName profilePic")
       .sort({ createdAt: -1 });
 
     res.json(vibes);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -31,9 +28,7 @@ export const getMyVibe = async (req, res) => {
     });
     res.json(vibe);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -45,11 +40,7 @@ export const generateMemeOptions = async (req, res) => {
     const imgflipData = await imgflipRes.json();
 
     if (!imgflipData.success) {
-      return res
-              .status(500)
-              .json({ 
-                error: "Failed to fetch memes from Imgflip" 
-              });
+      return res.status(500).json({ error: "Failed to fetch memes from Imgflip" });
     }
 
     const memes = imgflipData.data.memes;
@@ -65,9 +56,7 @@ export const generateMemeOptions = async (req, res) => {
 
     res.json({ options: [pick] });
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -115,13 +104,9 @@ export const postVibe = async (req, res) => {
     });
 
     await vibe.populate("userId", "fullName profilePic");
-    res
-      .status(201)
-      .json(vibe);
+    res.status(201).json(vibe);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -132,23 +117,17 @@ export const deleteVibe = async (req, res) => {
     const vibe = await Vibe.findById(req.params.id);
 
     if (!vibe){
-      return res
-               .status(404)
-               .json({ error: "Not found" });
+      return res.status(404).json({ error: "Not found" });
     }
 
     if (vibe.userId.toString() !== req.user._id.toString()){
-      return res
-               .status(403)
-               .json({ error: "Unauthorized" });
+      return res.status(403).json({ error: "Unauthorized" });
     }
 
     await Vibe.findByIdAndDelete(req.params.id);
     res.json({ message: "Vibe deleted" });
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -159,9 +138,7 @@ export const replyToVibe = async (req, res) => {
     const { text } = req.body;
     const vibe = await Vibe.findById(req.params.id);
     if (!vibe){
-      return res
-               .status(404)
-               .json({ error: "Not found" });
+      return res.status(404).json({ error: "Not found" });
     }
 
     vibe.replies.push({ fromId: req.user._id, text });
@@ -170,9 +147,7 @@ export const replyToVibe = async (req, res) => {
 
     res.json(vibe);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -182,8 +157,9 @@ export const updateVibeCaption = async (req, res) => {
     const { userCaption } = req.body;
     const vibe = await Vibe.findById(req.params.id);
 
-    if (!vibe)
+    if (!vibe){
       return res.status(404).json({ error: "Not found" });
+    }
 
     vibe.userCaption = userCaption ?? "";
     await vibe.save();

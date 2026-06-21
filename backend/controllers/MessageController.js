@@ -42,9 +42,7 @@ export const getMessages = async (req, res) => {
       ],
     }).populate("replyTo", "text image senderId");
 
-    res
-      .status(200)
-      .json(messages);
+    res.status(200).json(messages);
   } catch (error) {
     console.log("Error in getMessages controller: ", error.message);
     res
@@ -69,11 +67,7 @@ export const sendMessage = async (req, res) => {
     }
 
     if (!text && !image) {
-      return res
-               .status(400)
-               .json({ 
-                error: "Message cannot be empty" 
-              });
+      return res.status(400).json({ error: "Message cannot be empty" });
     }
 
     // If receiver is online, mark as delivered immediately; otherwise sent
@@ -93,21 +87,13 @@ export const sendMessage = async (req, res) => {
     await newMessage.populate("replyTo", "text image senderId");
 
     if (receiverSocketId) {
-      io
-       .to(receiverSocketId)
-       .emit("newMessage", newMessage);
+      io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    res
-      .status(201)
-      .json(newMessage);
+    res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage controller: ", error.message);
-    res
-      .status(500)
-      .json({ 
-        error: "Internal server error" 
-      });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -120,20 +106,12 @@ export const deleteMessage = async (req, res) => {
 
     const message = await Message.findById(id);
     if (!message){
-      return res
-               .status(404)
-               .json({ 
-                message: "Message not found" 
-              });
+      return res.status(404).json({ message: "Message not found" });
     }
 
     if (deleteFor === "everyone") {
       if (message.senderId.toString() !== userId.toString()) {
-        return res
-                 .status(403)
-                 .json({ 
-                  message: "Unauthorized" 
-                });
+        return res.status(403).json({ message: "Unauthorized" });
       }
       await Message.findByIdAndDelete(id);
     } else {
@@ -142,18 +120,10 @@ export const deleteMessage = async (req, res) => {
       });
     }
 
-    res
-      .status(200)
-      .json({ 
-        message: "Message deleted" 
-      });
+    res.status(200).json({ message: "Message deleted" });
   } catch (error) {
     console.log("Error deleting message:", error.message);
-    res
-      .status(500)
-      .json({ 
-        error: "Internal server error" 
-      });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -167,10 +137,6 @@ export const getUnreadCounts = async (req, res) => {
     ]);
     res.json(counts);
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        error: error.message 
-      });
+    res.status(500).json({ error: error.message });
   }
 };

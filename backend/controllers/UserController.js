@@ -5,11 +5,7 @@ export const searchUsers = async (req, res) => {
   try {
     const { query } = req.query;
     if (!query) {
-      return res
-               .status(400)
-               .json({ 
-                message: "Query is required" 
-              });
+      return res.status(400).json({ message: "Query is required" });
     }
 
     const users = await User.find({
@@ -18,15 +14,9 @@ export const searchUsers = async (req, res) => {
         { _id: { $ne: req.user._id } },
       ],
     }).select("-password");
-    res
-      .status(200)
-      .json(users);
+    res.status(200).json(users);
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        message: "Internal server error" 
-      });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -38,46 +28,27 @@ export const sendFriendRequest = async (req, res) => {
 
     const targetUser = await User.findById(toId);
     if (!targetUser){
-      return res
-               .status(404)
-               .json({ 
-                message: "User not found" 
-              });
+      return res.status(404).json({ message: "User not found" });
     }
 
     if (targetUser.friends.some((id) => id.toString() === fromId.toString())) {
-      return res
-               .status(400)
-               .json({ 
-                message: "Already friends" 
-              });
+      return res.status(400).json({ message: "Already friends" });
     }
 
     const isPending = targetUser.friendRequests.some(
       (r) => r.from.toString() === fromId.toString()
     );
     if (isPending) {
-      return res
-              .status(400)
-              .json({ 
-                message: "Request already sent" 
-              });
+      return res.status(400).json({ message: "Request already sent" });
     }
 
     targetUser.friendRequests.push({ from: fromId });
     await targetUser.save();
 
-    res
-      .status(200)
-      .json({ 
-        message: "Friend request sent!" 
+    res.status(200).json({ message: "Friend request sent!" 
       });
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        message: "Server error" 
-      });
+    res.status(500).json({ message: "Server error"});
   }
 };
 
@@ -91,11 +62,7 @@ export const acceptFriendRequest = async (req, res) => {
     const sender = await User.findById(senderId);
 
     if (!me || !sender) {
-      return res
-              .status(404)
-              .json({ 
-                message: "User not found" 
-              });
+      return res.status(404).json({ message: "User not found" });
     }
 
     me.friendRequests = me.friendRequests.filter(
@@ -107,17 +74,9 @@ export const acceptFriendRequest = async (req, res) => {
     await me.save();
     await sender.save();
 
-    res
-      .status(200)
-      .json({ 
-        message: "Request accepted! You are now friends 🎉" 
-      });
+    res.status(200).json({ message: "Request accepted! You are now friends !" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        message: "Server error" 
-      });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -129,11 +88,7 @@ export const rejectFriendRequest = async (req, res) => {
 
     const me = await User.findById(myId);
     if (!me) {
-      return res
-               .status(404)
-               .json({ 
-                message: "User not found" 
-              });
+      return res.status(404).json({ message: "User not found" });
     }
 
     me.friendRequests = me.friendRequests.filter(
@@ -141,17 +96,9 @@ export const rejectFriendRequest = async (req, res) => {
     );
     await me.save();
 
-    res
-      .status(200)
-      .json({ 
-        message: "Request rejected" 
-      });
+    res.status(200).json({ message: "Request rejected" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        message: "Server error" 
-      });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -162,15 +109,9 @@ export const getFriends = async (req, res) => {
       "friends",
       "-password"
     );
-    res
-     .status(200)
-     .json(user.friends);
+    res.status(200).json(user.friends);
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        message: "Server error" 
-      });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -181,14 +122,8 @@ export const getFriendRequests = async (req, res) => {
       "friendRequests.from",
       "-password"
     );
-    res
-      .status(200)
-      .json(user.friendRequests);
+    res.status(200).json(user.friendRequests);
   } catch (error) {
-    res
-      .status(500)
-      .json({ 
-        message: "Server error" 
-      });
+    res.status(500).json({ message: "Server error" });
   }
 };
