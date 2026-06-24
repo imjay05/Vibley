@@ -1,15 +1,7 @@
 .home-page {
   height: 100vh;
   padding-top: 3.5rem; 
-  background: linear-gradient(
-    135deg,
-    #0a1628 0%,
-    #0d2b5e 20%,
-    #1a4fa0 42%,
-    #2176d2 60%,
-    #38a8f5 80%,
-    #56c8f7 100%
-  );
+  background: #7ab5f0;
 }
 
 .home-center {
