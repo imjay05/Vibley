@@ -1,11 +1,8 @@
-import { useChatStore } from "../store/useChatStore";
 import { useEffect } from "react";
-import ChatHeader from "./ChatHeader";
-import MessageInput from "./MessageInput";
-import MessageSkeleton from "../skeletons/MessageSkeleton";
-import { useAuthStore } from "../../store/useAuthStore";
-import { Users, UserPlus, Bell } from "lucide-react";
+import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
+import { Users, UserPlus, Bell } from "lucide-react";
 
 const Sidebar = () => {
   const {
@@ -51,12 +48,13 @@ const Sidebar = () => {
           </button>
           <button
             className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-            onClick={() => document.getElementById("add_contact_modal").showModal()} >
+            onClick={() => document.getElementById("add_contact_modal").showModal()}>
             <UserPlus className="size-4 text-gray-500" />
           </button>
         </div>
       </div>
 
+      {/* Friends list */}
       <div className="overflow-y-auto flex-1 py-2">
         {friends.length === 0 && (
           <p className="text-center text-gray-400 text-sm py-8">No contacts yet</p>
