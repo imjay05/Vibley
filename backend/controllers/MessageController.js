@@ -140,3 +140,42 @@ export const getUnreadCounts = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+// GET /api/messages/recent-contacts
+export const getRecentContacts = async (req, res) => {
+  try {
+    const myId = req.user._id;
+
+    const messages = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ senderId: myId }, { receiverId: myId }],
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ["$senderId", myId] },
+              "$receiverId",
+              "$senderId",
+            ],
+          },
+          lastMessageAt: { $first: "$createdAt" },
+          lastMessageText: { $first: "$text" },
+        },
+      },
+      {
+        $sort: { lastMessageAt: -1 },
+      },
+    ]);
+
+    res.json(messages); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

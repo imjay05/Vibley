@@ -14,6 +14,7 @@ export const useChatStore = create((set, get) => ({
   searchResults: [],
   replyTo: null,
   _socketHandlers: {},
+  recentOrder: [],
 
   setReplyTo: (msg) => set({ replyTo: msg }),
   setSelectedUser: (user) => set({ selectedUser: user }),
@@ -86,6 +87,15 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  getRecentOrder: async () => {
+  try {
+    const res = await axiosInstance.get("/messages/recent-contacts");
+    set({ recentOrder: res.data.map((r) => r._id) });
+  } catch {
+    // silently fail, fallback to default order
+  }
+  },
+
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
@@ -129,6 +139,12 @@ export const useChatStore = create((set, get) => ({
           m._id === tempId ? res.data : m
         ),
       });
+      set((state) => ({
+        recentOrder: [
+          selectedUser._id,
+          ...state.recentOrder.filter((id) => id !== selectedUser._id),
+        ],
+      }));
     } catch {
       set({ messages: get().messages.filter((m) => m._id !== tempId) });
       toast.error("Failed to send");
@@ -142,6 +158,13 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
 
     const handleNewMessage = (newMessage) => {
+      set((state) => ({
+        recentOrder: [
+          newMessage.senderId,
+          ...state.recentOrder.filter((id) => id !== newMessage.senderId),
+        ],
+      }));
+
       if (newMessage.senderId !== selectedUser._id) {
         set((state) => ({
           unreadCounts: {

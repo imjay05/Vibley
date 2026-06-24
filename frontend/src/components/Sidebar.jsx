@@ -7,6 +7,8 @@ import { Users, UserPlus, Bell } from "lucide-react";
 const Sidebar = () => {
   const {
     friends,
+    recentOrder,
+    getRecentOrder,
     selectedUser,
     setSelectedUser,
     isUsersLoading,
@@ -22,7 +24,16 @@ const Sidebar = () => {
     getFriends();
     getFriendRequests();
     getUnreadCounts();
+    getRecentOrder();
   }, []);
+
+  const sortedFriends = [...friends].sort((a, b) => {
+    const ai = recentOrder.indexOf(a._id);
+    const bi = recentOrder.indexOf(b._id);
+    const aRank = ai === -1 ? Infinity : ai;
+    const bRank = bi === -1 ? Infinity : bi;
+    return aRank - bRank;
+  });
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
@@ -56,10 +67,10 @@ const Sidebar = () => {
 
       {/* Friends list */}
       <div className="overflow-y-auto flex-1 py-2">
-        {friends.length === 0 && (
+        {sortedFriends.length === 0 && (
           <p className="text-center text-gray-400 text-sm py-8">No contacts yet</p>
         )}
-        {friends.map((user, i) => (
+        {sortedFriends.map((user, i) => (
           <button
             key={user._id}
             onClick={() => setSelectedUser(user)}
