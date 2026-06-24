@@ -11,7 +11,6 @@ import { connectDB } from "./lib/DB.js";
 import authRoutes from "./routes/AuthRoute.js";
 import messageRoutes from "./routes/MessageRoute.js";
 import userRoutes from "./routes/UserRoute.js";
-import vibeRoutes from "./routes/VibeRoute.js";
 import { app, server } from "./lib/Socket.js";
 
 const PORT = process.env.PORT || 5001;
@@ -40,7 +39,6 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/vibes", vibeRoutes);
 
 connectDB().then(() => {
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

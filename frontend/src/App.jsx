@@ -3,7 +3,6 @@ import HomePage from "./pages/home/HomePage";
 import SignUpPage from "./pages/signup/SignupPage";
 import LoginPage from "./pages/login/LoginPage";
 import ProfilePage from "./pages/profile/Profilepage";
-import VibePage from "./pages/vibe/VibePage";
 
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
@@ -40,7 +39,6 @@ const App = () => {
         <Route path="/signup"  element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
         <Route path="/login"   element={!authUser ? <LoginPage />  : <Navigate to="/" />} />
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
-        <Route path="/vibes"   element={authUser ? <VibePage />    : <Navigate to="/login" />} />
       </Routes>
       <Toaster position="top-center" toastOptions={{ duration: 2500 }} />
     </div>
