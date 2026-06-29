@@ -118,17 +118,17 @@ It's a small product, but it's a *real* one — built to handle the things every
                                │ HTTPS / WebSocket
               ┌────────────────▼────────────────┐
               │        Express.js Server        │
-              │   /api/auth  /api/messages       │
-              │   /api/users  /api/vibes         │
-              │   ──────────────────────────     │
-              │   Socket.IO: presence, delivery,  │
-              │   seen receipts                   │
+              │   /api/auth  /api/messages      │
+              │   /api/users  /api/vibes        │
+              │   ──────────────────────────    │
+              │   Socket.IO: presence, delivery,│
+              │   seen receipts                 │
               └──────────────┬──────────────────┘
                              │
               ┌──────────────▼─────────────┐      ┌─────────────────┐
               │         MongoDB            │      │   Cloudinary    │
               │  Users · Messages · Vibes  │      │ Images / Memes  │
-              └─────────────────────────────┘      └─────────────────┘
+              └────────────────────────────┘      └─────────────────┘
 ```
 
 ### Message Lifecycle
@@ -213,9 +213,9 @@ Sender's UI updates status label live, no refetch required
 │         Vibe         │
 ├──────────────────────┤
 │ userId (FK → User)   │
-│ memeUrl / moodText    │
-│ expiresAt (TTL)       │
-│ replies[] { fromId, text } │
+│ memeUrl / moodText   │
+│ expiresAt (TTL)      │
+│ replies[] { fromId, text }│
 └──────────────────────┘
 ```
 
